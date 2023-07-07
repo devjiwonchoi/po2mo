@@ -12,7 +12,10 @@ interface ConversionTask {
   output: string
 }
 
-export function processPoFiles(configFile: string): void {
+export function processPoFiles(configFilePath: string): void {
+  const configFile =
+    configFilePath ||
+    path.resolve(path.dirname(require.main!.filename), 'po2mo.json')
   // Read the JSON configuration file
   const configData = fs.readFileSync(configFile, 'utf-8')
   const config: Config = JSON.parse(configData)
@@ -58,7 +61,7 @@ export function processPoFiles(configFile: string): void {
   })
 }
 
-export function convertPoToMo(poFilePath: string, moFilePath: string): void {
+function convertPoToMo(poFilePath: string, moFilePath: string): void {
   // Resolve the absolute file paths
   const absolutePoFilePath = path.resolve(poFilePath)
   const absoluteMoFilePath = path.resolve(moFilePath)
@@ -74,4 +77,13 @@ export function convertPoToMo(poFilePath: string, moFilePath: string): void {
 
   // Write the .mo data to the .mo file
   fs.writeFileSync(absoluteMoFilePath, moData)
+}
+
+// Call the function when executed as a standalone script
+if (require.main === module) {
+  const configFile = path.resolve(
+    path.dirname(require.main.filename),
+    'po2mo.json'
+  ) // Provide the path to your configuration file
+  processPoFiles(configFile)
 }
