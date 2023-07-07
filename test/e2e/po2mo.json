@@ -1,0 +1,8 @@
+{
+  "files": [
+    {
+      "input": "Locale/test.po",
+      "output": "Locale/test.mo"
+    }
+  ]
+}

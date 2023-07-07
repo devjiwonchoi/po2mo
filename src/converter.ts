@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import fs from 'fs'
 import path from 'path'
 import { mo, po } from 'gettext-parser'
@@ -79,11 +81,7 @@ function convertPoToMo(poFilePath: string, moFilePath: string): void {
   fs.writeFileSync(absoluteMoFilePath, moData)
 }
 
-// Call the function when executed as a standalone script
 if (require.main === module) {
-  const configFile = path.resolve(
-    path.dirname(require.main.filename),
-    'po2mo.json'
-  ) // Provide the path to your configuration file
+  const configFile = path.join(process.cwd(), 'po2mo.json')
   processPoFiles(configFile)
 }
