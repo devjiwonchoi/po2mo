@@ -1,6 +1,6 @@
 {
   "name": "po2mo",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Zero config light-weight package to convert .po files to .mo files anywhere.",
   "main": "dist/converter.js",
   "repository": "git@github.com:devjiwonchoi/po2mo.git",
