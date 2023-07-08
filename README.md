@@ -24,7 +24,7 @@ pnpm add -D po2mo
 
 ## Config
 
-Create a config json file in the root of your project.
+Create a `po2mo.json` file at the root of your project.
 
 ```bash
 touch po2mo.json
@@ -38,14 +38,13 @@ By default, po2mo will convert every `.po` files under the directory to same fil
 {
   "files": [
     {
-      "input": "Locale/kr", // -> Locale/kr/messages.po
-      "output": "Locale/kr" // -> Locale/kr/messages.mo
+      "input": "Locale/kr",
+      "output": "Locale/kr"
     },
     {
-      "input": "Locale/fr", // -> Locale/fr/messages.po
-      "output": "Locale/fr" // -> Locale/fr/messages.mo
+      "input": "Locale/fr",
+      "output": "Locale/fr"
     }
-    // ...
   ]
 }
 ```
