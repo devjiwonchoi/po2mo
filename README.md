@@ -22,6 +22,14 @@ yarn add -D po2mo
 pnpm add -D po2mo
 ```
 
+### executables
+
+Download the executable file from the [exec](https://github.com/devjiwonchoi/po2mo/tree/main/exec) directory.
+
+```bash
+/exec/po2mo-<platform>
+```
+
 ## Config
 
 Create a `po2mo.json` file at the root of your project.
@@ -84,4 +92,10 @@ yarn po2mo
 
 ```bash
 pnpm po2mo
+```
+
+### executables
+
+```bash
+./po2mo-<platform>
 ```
