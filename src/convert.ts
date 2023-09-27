@@ -1,12 +1,11 @@
 import fs from 'fs'
 import path from 'path'
-import grdp from 'grdp'
 import { mo, po } from 'gettext-parser'
 
-function getConfig(rootDir: string) {
-  const configFilePath = path.join(rootDir, 'po2mo.json')
+function getConfig(cwd: string) {
+  const configFilePath = path.join(cwd, 'po2mo.json')
   if (!fs.existsSync(configFilePath)) {
-    throw new Error(`po2mo.json file not found on path: ${rootDir}`)
+    throw new Error(`po2mo.json file not found on path: ${cwd}`)
   }
   return JSON.parse(fs.readFileSync(configFilePath, 'utf-8'))
 }
@@ -18,17 +17,16 @@ function parsePoToMo(input: string, output: string) {
   fs.writeFileSync(output, moData)
 }
 
-export function convert(cwd?: string) {
-  const rootDir = cwd ?? grdp()
-  const config = getConfig(rootDir)
+export function convert(cwd: string) {
+  const config = getConfig(cwd)
 
   config.files.forEach(
     ({ input, output }: { input: string; output: string }) => {
-      const entry = path.join(rootDir, input)
+      const entry = path.join(cwd, input)
       const isFileEntry = input.endsWith('.po') && output.endsWith('.mo')
 
       if (isFileEntry) {
-        parsePoToMo(entry, path.join(rootDir, output))
+        parsePoToMo(entry, path.join(cwd, output))
         return
       }
 

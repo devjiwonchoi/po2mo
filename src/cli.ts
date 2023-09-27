@@ -3,11 +3,12 @@ import { convert } from './convert'
 import { formatDuration } from './utils'
 
 export function cli() {
-  let timeStart = Date.now()
-  let timeEnd
+  const cwd = process.cwd()
+  let start = Date.now()
+  let end: number
   try {
-    convert()
-    timeEnd = Date.now()
+    convert(cwd)
+    end = Date.now()
   } catch (error) {
     if (error instanceof Error) {
       console.error(`${error.message}`)
@@ -15,7 +16,7 @@ export function cli() {
     return
   }
 
-  const duration = timeEnd - timeStart
+  const duration = end - start
 
   console.log(`✨ Finished in ${formatDuration(duration)}`)
 }

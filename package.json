@@ -14,8 +14,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "gettext-parser": "^7.0.1",
-    "grdp": "^1.0.0"
+    "gettext-parser": "^7.0.1"
   },
   "devDependencies": {
     "@types/gettext-parser": "^4.0.2",
