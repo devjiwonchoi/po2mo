@@ -1,15 +1,12 @@
 {
   "name": "po2mo",
   "version": "1.2.2",
-  "description": "Zero config light-weight package to convert .po files to .mo files anywhere.",
-  "main": "dist/converter.js",
-  "repository": "git@github.com:devjiwonchoi/po2mo.git",
-  "author": "devjiwonchoi <devjeanmarlon@gmail.com>",
-  "license": "MIT",
-  "private": false,
-  "bin": "dist/converter.js",
+  "description": ".po to .mo converter",
+  "main": "dist/po2mo.js",
+  "bin": "dist/po2mo.js",
   "scripts": {
-    "build": "tsc && pkg . --out-path exec --targets node16-linux-x64,node16-macos-x64,node16-win-x64 --overwrite",
+    "build:exec": "pkg . --out-path exec --targets node16-linux-x64,node16-macos-x64,node16-win-x64 --overwrite",
+    "build": "tsc && pnpm run build:exec",
     "test": "jest"
   },
   "dependencies": {
@@ -21,7 +18,23 @@
     "@types/jest": "^29.5.5",
     "@types/node": "^20.7.0",
     "jest": "^29.7.0",
+    "pkg": "^5.8.1",
     "ts-jest": "^29.1.1",
     "typescript": "^5.2.2"
-  }
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "preset": "ts-jest"
+  },
+  "repository": "git@github.com:devjiwonchoi/po2mo.git",
+  "author": "Jiwon Choi",
+  "license": "MIT",
+  "keywords": [
+    "gettext",
+    "po",
+    "mo",
+    "po2mo",
+    "gettext-parser",
+    "converter"
+  ]
 }
