@@ -6,6 +6,9 @@
   "bin": {
     "po2mo": "./dist/cli.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build:exec": "pkg . --out-path exec --targets node18-linux-x64,node18-macos-x64,node18-win-x64 --overwrite",
     "build:src": "bunchee ./src/index.ts -f cjs -o ./dist/index.js && bunchee ./src/cli.ts -f cjs -o ./dist/cli.js",
