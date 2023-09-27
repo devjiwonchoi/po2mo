@@ -1,7 +1,7 @@
 {
   "name": "po2mo",
   "version": "1.2.2",
-  "description": ".po to .mo converter",
+  "description": "po to mo, it's simple.",
   "main": "dist/index.js",
   "bin": {
     "po2mo": "./dist/cli.js"
