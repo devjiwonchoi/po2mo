@@ -1,0 +1,16 @@
+{
+  "files": [
+    {
+      "input": "./locale/ko/ko.po",
+      "output": "./locale/ko/ko.mo"
+    },
+    {
+      "input": "./locale/fr/fr.po",
+      "output": "./locale/fr/fr.mo"
+    },
+    {
+      "input": "./locale/jp/jp.po",
+      "output": "./locale/jp/jp.mo"
+    }
+  ]
+}
