@@ -13,7 +13,14 @@
 ## Installation
 
 ```bash
+// npm
 npm i -D po2mo
+
+// yarn
+yarn add -D po2mo
+
+//pnpm
+pnpm add -D po2mo
 ```
 
 ### Executable
@@ -67,7 +74,14 @@ You can specify the input and output files.
 ## Usage
 
 ```bash
-npm run po2mo
+// npm
+npm exec po2mo
+
+// yarn
+yarn po2mo
+
+// pnpm
+pnpm po2mo
 ```
 
 ### Executables
