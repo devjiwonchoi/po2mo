@@ -1,0 +1,12 @@
+{
+  "files": [
+    {
+      "input": "./locale/zh_cn/zh_cn.po",
+      "output": "./locale/zh_cn/zh_cn.mo"
+    },
+    {
+      "input": "./locale/zh_tw",
+      "output": "./locale/zh_tw"
+    }
+  ]
+}
