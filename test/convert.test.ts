@@ -1,13 +1,13 @@
 import fs from 'fs'
 import path from 'path'
-import { main } from '../src/po2mo'
+import { convert } from '../src/convert'
 
 const fixturePath = path.resolve(__dirname, 'fixtures')
 
 it('entry as directory', () => {
   const dirName = fixturePath + '/entry-as-directory'
   const localeDirs = ['ko', 'jp', 'fr']
-  main(dirName)
+  convert(dirName)
 
   localeDirs.forEach((dir) => {
     const dirPath = path.join(dirName, 'locale', dir)
@@ -20,7 +20,7 @@ it('entry as directory', () => {
 it('entry as file', () => {
   const dirName = fixturePath + '/entry-as-file'
   const localeDirs = ['ko', 'jp', 'fr']
-  main(dirName)
+  convert(dirName)
 
   localeDirs.forEach((dir) => {
     const dirPath = path.join(dirName, 'locale', dir)
