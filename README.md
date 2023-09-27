@@ -1,6 +1,14 @@
 # po2mo
 
-Inspired by [po2mo.net](https://po2mo.net/), props to [Sam Hauglustaine](https://github.com/smhg) for creating an awesome module, [gettext-parser](https://github.com/smhg/gettext-parser).
+<p align="left">
+  <a href="https://npm.im/po2mo">
+    <img src="https://badgen.net/npm/v/po2mo">
+  </a>
+
+  <a href="https://github.com/devjiwonchoi/po2mo/actions?workflow=CI">
+    <img src="https://github.com/devjiwonchoi/po2mo/actions/workflows/node_ci.yml/badge.svg">
+  </a>
+</p>
 
 ## Installation
 
