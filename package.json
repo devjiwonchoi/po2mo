@@ -32,6 +32,10 @@
   },
   "repository": "git@github.com:devjiwonchoi/po2mo.git",
   "author": "Jiwon Choi",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/devjiwonchoi"
+  },
   "license": "MIT",
   "keywords": [
     "gettext",
