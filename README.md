@@ -4,33 +4,15 @@ Inspired by [po2mo.net](https://po2mo.net/), props to [Sam Hauglustaine](https:/
 
 ## Installation
 
-### npm
-
 ```bash
-npm install --save-dev po2mo
+npm i -D po2mo
 ```
 
-### yarn
+### Executable
 
-```bash
-yarn add -D po2mo
-```
+You can download the executable files from the [exec](https://github.com/devjiwonchoi/po2mo/tree/main/exec) directory.
 
-### pnpm
-
-```bash
-pnpm add -D po2mo
-```
-
-### executables
-
-Download the executable file from the [exec](https://github.com/devjiwonchoi/po2mo/tree/main/exec) directory.
-
-```bash
-/exec/po2mo-<platform>
-```
-
-## Config
+## po2mo.json
 
 Create a `po2mo.json` file at the root of your project.
 
@@ -40,18 +22,18 @@ touch po2mo.json
 
 Set a relative path from the root of your project to the input and output files.
 
-By default, po2mo will convert every `.po` files under the directory to same filename.
+By default, po2mo will convert every `.po` files under the directory as the equivalent filename.
 
 ```json
 {
   "files": [
     {
-      "input": "Locale/kr",
-      "output": "Locale/kr"
+      "input": "./locale/ko",
+      "output": "./locale/ko"
     },
     {
-      "input": "Locale/fr",
-      "output": "Locale/fr"
+      "input": "./locale/fr",
+      "output": "./locale/fr"
     }
   ]
 }
@@ -63,12 +45,12 @@ You can specify the input and output files.
 {
   "files": [
     {
-      "input": "Locale/kr/before.po",
-      "output": "Locale/kr/after.mo"
+      "input": "./locale/ko/before.po",
+      "output": "./locale/ko/after.mo"
     },
     {
-      "input": "Locale/fr/before.po",
-      "output": "Locale/fr/after.mo"
+      "input": "./locale/fr/before.po",
+      "output": "./locale/fr/after.mo"
     }
   ]
 }
@@ -76,26 +58,21 @@ You can specify the input and output files.
 
 ## Usage
 
-### npm
-
 ```bash
 npm run po2mo
 ```
 
-### yarn
-
-```bash
-yarn po2mo
-```
-
-### pnpm
-
-```bash
-pnpm po2mo
-```
-
-### executables
+### Executables
 
 ```bash
 ./po2mo-<platform>
+
+// Mac
+./po2mo-macos
+
+// Windows
+./po2mo-win.exe
+
+// Linux
+./po2mo-linux
 ```
