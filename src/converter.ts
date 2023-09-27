@@ -5,20 +5,20 @@ import path from 'path'
 import grdp from 'grdp'
 import { mo, po } from 'gettext-parser'
 
-const rootDir = grdp()
-
-function getConfig(): {
-  files: {
-    input: string
-    output: string
-  }[]
-} {
+function getConfig(rootDir: string) {
   const configFilePath = path.join(rootDir, 'po2mo.json')
+  if (!fs.existsSync(configFilePath)) {
+    console.error(`po2mo.json file not found on path: ${rootDir}`)
+    return
+  }
   return JSON.parse(fs.readFileSync(configFilePath, 'utf-8'))
 }
 
-function convert() {
-  const config = getConfig()
+export function convert(cwd?: string) {
+  const rootDir = cwd ?? grdp()
+  const config = getConfig(rootDir)
+
+  if (!config) return
 
   config.files.forEach(
     ({ input, output }: { input: string; output: string }) => {
