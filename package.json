@@ -1,8 +1,8 @@
 {
   "name": "po2mo",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "description": "po to mo, it's simple.",
-  "main": "dist/index.js",
+  "main": "./dist/index.js",
   "bin": {
     "po2mo": "./dist/cli.js"
   },
@@ -30,8 +30,13 @@
     "testEnvironment": "node",
     "preset": "ts-jest"
   },
-  "repository": "git@github.com:devjiwonchoi/po2mo.git",
+  "packageManager": "pnpm@8.6.12",
   "author": "Jiwon Choi",
+  "repository": "git@github.com:devjiwonchoi/po2mo.git",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/devjiwonchoi"
+  },
   "license": "MIT",
   "keywords": [
     "gettext",
