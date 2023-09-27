@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { main } from '../src/converter'
+import { main } from '../src/po2mo'
 
 const fixturePath = path.resolve(__dirname, 'fixtures')
 
