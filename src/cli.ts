@@ -9,13 +9,15 @@ export function cli() {
     convert()
     timeEnd = Date.now()
   } catch (error) {
-    timeEnd = Date.now()
-    if (error instanceof Error) console.error(error.message)
+    if (error instanceof Error) {
+      console.error(`${error.message}`)
+    }
+    return
   }
 
   const duration = timeEnd - timeStart
 
-  console.log(`Finished in ${formatDuration(duration)}`)
+  console.log(`✨ Finished in ${formatDuration(duration)}`)
 }
 
 cli()
