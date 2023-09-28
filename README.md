@@ -35,26 +35,7 @@ Create a `po2mo.json` file at the root of your project.
 touch po2mo.json
 ```
 
-Set a relative path from the root of your project to the input and output files.
-
-By default, po2mo will convert every `.po` files under the directory as the equivalent filename.
-
-```json
-{
-  "files": [
-    {
-      "input": "./locale/ko",
-      "output": "./locale/ko"
-    },
-    {
-      "input": "./locale/fr",
-      "output": "./locale/fr"
-    }
-  ]
-}
-```
-
-You can specify the input and output files.
+Set a relative path from the root of your project to the input and expected output files.
 
 ```json
 {
@@ -66,6 +47,38 @@ You can specify the input and output files.
     {
       "input": "./locale/fr/before.po",
       "output": "./locale/fr/after.mo"
+    }
+  ]
+}
+```
+
+### Wildcard
+
+Using `/*` wildcard will match all `.po` files in the directory and convert to the equivalent filename.
+
+```json
+{
+  "files": [
+    {
+      "input": "./locale/ko/*",
+      "output": "./locale/ko/*"
+    },
+    {
+      "input": "./locale/fr/*",
+      "output": "./locale/fr/*"
+    }
+  ]
+}
+```
+
+Using `/**/*` wildcard will recursively match all `.po` files within the directory and convert to the equivalent filename.
+
+```json
+{
+  "files": [
+    {
+      "input": "./locale/**/*",
+      "output": "./locale/**/*"
     }
   ]
 }
