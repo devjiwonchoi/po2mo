@@ -25,7 +25,7 @@ pnpm add -D po2mo
 
 ### Executable
 
-You can download the executable files from the [exec](https://github.com/devjiwonchoi/po2mo/tree/main/exec) directory.
+You can download the executable files from the [releases](https://github.com/devjiwonchoi/po2mo/releases) or directly from the [exec](https://github.com/devjiwonchoi/po2mo/tree/main/exec) directory.
 
 ## po2mo.json
 
