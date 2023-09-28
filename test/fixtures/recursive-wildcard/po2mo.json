@@ -1,0 +1,8 @@
+{
+  "files": [
+    {
+      "input": "./locale/**/*",
+      "output": "./locale/**/*"
+    }
+  ]
+}

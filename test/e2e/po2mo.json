@@ -7,6 +7,10 @@
     {
       "input": "./locale/zh_tw/*",
       "output": "./locale/zh_tw/*"
+    },
+    {
+      "input": "./locale2/**/*",
+      "output": "./locale2/**/*"
     }
   ]
 }

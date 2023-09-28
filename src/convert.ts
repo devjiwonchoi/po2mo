@@ -40,11 +40,33 @@ export function convert(cwd: string) {
           .map((poFile) => path.join(entryPath, poFile.name))
 
         poFilePaths.forEach((poFilePath) => {
-          const poFileContent = fs.readFileSync(poFilePath, 'utf-8')
-          const poFileData = po.parse(poFileContent)
-          const moFileData = mo.compile(poFileData)
           const moFilePath = poFilePath.replace('.po', '.mo')
-          fs.writeFileSync(moFilePath, moFileData)
+          parsePoToMo(poFilePath, moFilePath)
+        })
+      }
+
+      if (isRecursiveWildcardEntry) {
+        const entryPath = entry.replace('/**/*', '')
+        const poFilePaths: string[] = []
+
+        const recursiveReadDir = (dir: string) => {
+          const dirents = fs.readdirSync(dir, { withFileTypes: true })
+
+          dirents.forEach((dirent) => {
+            const direntPath = path.join(dir, dirent.name)
+            if (dirent.isFile() && dirent.name.endsWith('.po')) {
+              poFilePaths.push(direntPath)
+            } else if (dirent.isDirectory()) {
+              recursiveReadDir(direntPath)
+            }
+          })
+        }
+
+        recursiveReadDir(entryPath)
+
+        poFilePaths.forEach((poFilePath) => {
+          const moFilePath = poFilePath.replace('.po', '.mo')
+          parsePoToMo(poFilePath, moFilePath)
         })
       }
     }

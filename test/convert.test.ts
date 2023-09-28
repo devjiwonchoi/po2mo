@@ -29,3 +29,16 @@ it('entry as file', () => {
     fs.unlinkSync(path.join(dirPath, `${dir}.mo`))
   })
 })
+
+it('entry as recursive wildcard', () => {
+  const dirName = fixturePath + '/recursive-wildcard'
+  const localeDirs = ['ko', 'jp', 'fr']
+  convert(dirName)
+
+  localeDirs.forEach((dir) => {
+    const dirPath = path.join(dirName, 'locale', dir)
+    const dirents = fs.readdirSync(dirPath)
+    expect(dirents).toContain(`${dir}.mo`)
+    fs.unlinkSync(path.join(dirPath, `${dir}.mo`))
+  })
+})
