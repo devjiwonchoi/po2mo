@@ -4,8 +4,8 @@ import { convert } from '../src/convert'
 
 const fixturePath = path.resolve(__dirname, 'fixtures')
 
-it('entry as directory', () => {
-  const dirName = fixturePath + '/entry-as-directory'
+it('entry as single wildcard', () => {
+  const dirName = fixturePath + '/single-wildcard'
   const localeDirs = ['ko', 'jp', 'fr']
   convert(dirName)
 

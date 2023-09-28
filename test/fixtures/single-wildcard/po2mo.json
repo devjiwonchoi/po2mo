@@ -1,0 +1,16 @@
+{
+  "files": [
+    {
+      "input": "./locale/ko/*",
+      "output": "./locale/ko/*"
+    },
+    {
+      "input": "./locale/fr/*",
+      "output": "./locale/fr/*"
+    },
+    {
+      "input": "./locale/jp/*",
+      "output": "./locale/jp/*"
+    }
+  ]
+}

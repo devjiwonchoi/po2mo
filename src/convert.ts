@@ -23,26 +23,30 @@ export function convert(cwd: string) {
   config.files.forEach(
     ({ input, output }: { input: string; output: string }) => {
       const entry = path.join(cwd, input)
-      const isFileEntry = input.endsWith('.po') && output.endsWith('.mo')
+      const isRecursiveWildcardEntry = entry.endsWith('/**/*')
+      const isWildcardEntry = entry.endsWith('/*') && !isRecursiveWildcardEntry
 
-      if (isFileEntry) {
+      if (!entry.includes('*')) {
         parsePoToMo(entry, path.join(cwd, output))
         return
       }
 
-      const dirents = fs.readdirSync(entry, { withFileTypes: true })
+      if (isWildcardEntry) {
+        const entryPath = entry.replace('/*', '')
+        const dirents = fs.readdirSync(entryPath, { withFileTypes: true })
 
-      const poFilePaths = dirents
-        .filter((dirent) => dirent.isFile() && dirent.name.endsWith('.po'))
-        .map((poFile) => path.join(entry, poFile.name))
+        const poFilePaths = dirents
+          .filter((dirent) => dirent.isFile() && dirent.name.endsWith('.po'))
+          .map((poFile) => path.join(entryPath, poFile.name))
 
-      poFilePaths.forEach((poFilePath) => {
-        const poFileContent = fs.readFileSync(poFilePath, 'utf-8')
-        const poFileData = po.parse(poFileContent)
-        const moFileData = mo.compile(poFileData)
-        const moFilePath = poFilePath.replace('.po', '.mo')
-        fs.writeFileSync(moFilePath, moFileData)
-      })
+        poFilePaths.forEach((poFilePath) => {
+          const poFileContent = fs.readFileSync(poFilePath, 'utf-8')
+          const poFileData = po.parse(poFileContent)
+          const moFileData = mo.compile(poFileData)
+          const moFilePath = poFilePath.replace('.po', '.mo')
+          fs.writeFileSync(moFilePath, moFileData)
+        })
+      }
     }
   )
 }
