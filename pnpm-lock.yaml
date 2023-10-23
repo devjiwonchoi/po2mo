@@ -12,7 +12,7 @@ dependencies:
 devDependencies:
   '@types/gettext-parser':
     specifier: ^4.0.2
-    version: 4.0.2
+    version: 4.0.3
   '@types/jest':
     specifier: ^29.5.5
     version: 29.5.5
@@ -1100,8 +1100,8 @@ packages:
     resolution: {integrity: sha512-VeiPZ9MMwXjO32/Xu7+OwflfmeoRwkE/qzndw42gGtgJwZopBnzy2gD//NN1+go1mADzkDcqf/KnFRSjTJ8xJA==}
     dev: true
 
-  /@types/gettext-parser@4.0.2:
-    resolution: {integrity: sha512-fwpC5IWmQmjXSr56i5Bitw9x+pKxO1Nnjp+wyxzEIEc+87HVolbJIViIcfdMvCU8nz81Z8BYzXYwDUAihRfCnw==}
+  /@types/gettext-parser@4.0.3:
+    resolution: {integrity: sha512-Vt9pX5eK0I6BNDuSoQN6KjX6Vkxuju5FUAHUwPpP5f9Hx0pgoZrcEQghatlB56KpCQlKnts1d+L8o7Ms5GQnHQ==}
     dependencies:
       '@types/node': 20.8.6
       '@types/readable-stream': 4.0.2
