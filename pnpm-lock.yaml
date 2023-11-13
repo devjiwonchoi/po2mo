@@ -21,7 +21,7 @@ devDependencies:
     version: 20.8.10
   bunchee:
     specifier: ^3.9.0
-    version: 3.9.1(typescript@5.2.2)
+    version: 3.9.2(typescript@5.2.2)
   jest:
     specifier: ^29.7.0
     version: 29.7.0(@types/node@20.8.10)
@@ -1389,8 +1389,8 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /bunchee@3.9.1(typescript@5.2.2):
-    resolution: {integrity: sha512-x0Yye3RhVTHMtdKFKE4pbBUKnRduEJcMThMj0TFS+1xxC6T4ybYoM8vOb2AnHEsTy8ozO0TAOuNwzMVouU8fUQ==}
+  /bunchee@3.9.2(typescript@5.2.2):
+    resolution: {integrity: sha512-JTp5ko5oFE2m8jdbBEjkowj8jLDg8bShvly6ScDFDSqAMCDHEd8pEAF92OMt8IQPquaU0DOEBkpM0lqnv/vbyw==}
     engines: {node: '>= 16'}
     hasBin: true
     peerDependencies:
