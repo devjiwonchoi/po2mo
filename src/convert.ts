@@ -43,7 +43,10 @@ async function getPoEntries(entry: string) {
   return poEntries
 }
 
-export async function convert(cwd: string) {
+export async function convert(cwd: string | null) {
+  if (!cwd) {
+    throw new Error('NOT_EXISTED')
+  }
   const config = await getConfig(cwd)
 
   const compileJobs = config.files.map(async ({ input, output }) => {
