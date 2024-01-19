@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { convert } from './convert'
-import { formatDuration } from './utils'
+import { convert } from '../convert'
+import { formatDuration } from '../utils'
 
 export function cli() {
   const cwd = process.cwd()
