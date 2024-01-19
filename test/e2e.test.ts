@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import po2mo from '../dist'
+import po2mo from '../dist/index'
 
 const E2EPath = path.resolve(__dirname, 'e2e')
 
