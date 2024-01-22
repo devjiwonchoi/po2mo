@@ -10,24 +10,7 @@
   </a>
 </p>
 
-## Installation
-
-```bash
-// npm
-npm i -D po2mo
-
-// yarn
-yarn add -D po2mo
-
-//pnpm
-pnpm add -D po2mo
-```
-
-### Executable
-
-You can download the executable files from the [releases](https://github.com/devjiwonchoi/po2mo/releases) or directly from the [exec](https://github.com/devjiwonchoi/po2mo/tree/main/exec) directory.
-
-## po2mo.json
+## Usage
 
 Create a `po2mo.json` file at the root of your project.
 
@@ -50,6 +33,12 @@ Set a relative path from the root of your project to the input and expected outp
     }
   ]
 }
+```
+
+Run `po2mo` via [npx](https://docs.npmjs.com/cli/v10/commands/npx).
+
+```bash
+npx po2mo
 ```
 
 ### Wildcard
@@ -84,24 +73,11 @@ Using `/**/*` wildcard will recursively match all `.po` files within the directo
 }
 ```
 
-## Usage
-
-```bash
-// npm
-npm exec po2mo
-
-// yarn
-yarn po2mo
-
-// pnpm
-pnpm po2mo
-```
-
 ### Executables
 
-```bash
-./po2mo-<platform>
+You can download the executable files from the [releases](https://github.com/devjiwonchoi/po2mo/releases) or directly from the [exec](https://github.com/devjiwonchoi/po2mo/tree/main/exec) directory.
 
+```bash
 // Mac
 ./po2mo-macos
 
