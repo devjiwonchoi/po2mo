@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 import path from 'path'
 import arg from 'arg'
-import { convert } from '../convert'
+import { po2mo } from '../convert'
 import { exit, logger, paint } from '../utils'
 import { version } from '../../package.json'
 
 type CliArgs = {
-  source?: string
+  input?: string
   config?: string
   cwd?: string
   output?: string
@@ -52,9 +52,9 @@ function parseCliArgs(argv: string[]) {
       argv,
     }
   )
-  const source: string | undefined = args._[0]
+  const input: string | undefined = args._[0]
   const parsedArgs: CliArgs = {
-    source,
+    input,
     config: args['--config'],
     cwd: args['--cwd'],
     output: args['--output'],
@@ -75,12 +75,17 @@ async function run(args: CliArgs): Promise<void> {
     return
   }
 
-  const cwd = args.cwd ?? process.cwd()
-  const entry = args.source ? path.resolve(cwd, args.source) : null
+  const { config, cwd, input, output, recursive } = args
   let start = Date.now()
   let end: number
   try {
-    // await convert(entry)
+    await po2mo({
+      config,
+      cwd,
+      input,
+      output,
+      recursive,
+    })
     end = Date.now()
   } catch (err: any) {
     if (err.name === 'NOT_EXISTED') {
