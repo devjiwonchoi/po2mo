@@ -10,13 +10,21 @@ const tests = [
     name: 'basic',
     args: [`${fixturesDir}/basic`],
   },
+  {
+    name: 'output',
+    args: [`${fixturesDir}/output`, '--output', `${fixturesDir}/output`],
+  },
+  {
+    name: 'recursive',
+    args: [`${fixturesDir}/recursive`, '--recursive'],
+  },
 ]
 
 describe('cli', () => {
   for (const test of tests) {
     const { name, args } = test
 
-    it(`${name} should convert po to mo properly`, async () => {
+    it(`should handle ${name} args`, async () => {
       const cp = spawn(
         `${require.resolve('tsx/cli')}`,
         [resolve('./src/bin/index.ts')].concat(args)
