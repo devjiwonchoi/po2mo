@@ -70,29 +70,32 @@ export async function po2mo({
     if (input.endsWith('.po')) {
       if (output) {
         if (output.endsWith('.mo')) {
-          await convertPoToMo(join(cwd, input), join(cwd, output))
+          await convertPoToMo(resolve(cwd, input), resolve(cwd, output))
           return
         }
         if ((await stat(output)).isDirectory()) {
           const filename = input.split('/').pop()?.replace('.po', '.mo')
-          await convertPoToMo(join(cwd, input), join(cwd, output, filename!))
+          await convertPoToMo(
+            resolve(cwd, input),
+            resolve(cwd, output, filename!)
+          )
           return
         }
       }
       await convertPoToMo(
-        join(cwd, input),
-        join(cwd, input.replace('.po', '.mo'))
+        resolve(cwd, input),
+        resolve(cwd, input.replace('.po', '.mo'))
       )
       return
     }
 
-    const poEntries = await getPoEntries(join(cwd, input), recursive)
+    const poEntries = await getPoEntries(resolve(cwd, input), recursive)
     const convertJobs: Promise<void>[] = poEntries.map((poEntry) => {
       if (output) {
         if (output.endsWith('.mo')) {
           throw new Error('Output path is not a directory')
         }
-        return convertPoToMo(poEntry, join(cwd, output))
+        return convertPoToMo(poEntry, resolve(cwd, output))
       }
       return convertPoToMo(poEntry, poEntry.replace('.po', '.mo'))
     })
