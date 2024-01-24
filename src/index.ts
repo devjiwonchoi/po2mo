@@ -1,1 +1,1 @@
-export { convert as default } from './convert'
+export { po2mo as default } from './convert'
