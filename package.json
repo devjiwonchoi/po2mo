@@ -2,6 +2,7 @@
   "name": "po2mo",
   "version": "1.4.0",
   "description": "po to mo, it's simple.",
+  "license": "MIT",
   "main": "./dist/index.js",
   "bin": "./dist/bin/cli.js",
   "types": "./dist/index.d.ts",
@@ -36,18 +37,14 @@
     "preset": "ts-jest"
   },
   "author": "Jiwon Choi",
-  "repository": "git@github.com:devjiwonchoi/po2mo.git",
-  "funding": {
-    "type": "github",
-    "url": "https://github.com/sponsors/devjiwonchoi"
-  },
-  "license": "MIT",
+  "repository": "https://github.com/devjiwonchoi/po2mo.git",
   "keywords": [
-    "gettext",
+    "po2mo",
     "po",
     "mo",
-    "po2mo",
-    "gettext-parser",
-    "converter"
+    "gettext",
+    "i18n",
+    "l10n",
+    "translate"
   ]
 }
