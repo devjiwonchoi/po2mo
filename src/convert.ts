@@ -95,7 +95,8 @@ export async function po2mo({
         if (output.endsWith('.mo')) {
           throw new Error('Output path is not a directory')
         }
-        return convertPoToMo(poEntry, resolve(cwd, output))
+        const filename = poEntry.split('/').pop()?.replace('.po', '.mo')
+        return convertPoToMo(poEntry, resolve(cwd, output, filename!))
       }
       return convertPoToMo(poEntry, poEntry.replace('.po', '.mo'))
     })
