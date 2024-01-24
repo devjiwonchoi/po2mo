@@ -2,6 +2,7 @@ import { readFile, readdir, writeFile, stat } from 'fs/promises'
 import { join, resolve } from 'path'
 import { po, mo } from 'gettext-parser'
 import { logger } from './utils'
+import { CliArgs } from './bin'
 
 type Po2MoConfig = {
   files: {
@@ -33,21 +34,13 @@ async function getPoEntries(entry: string, recursive: boolean) {
   return poEntries
 }
 
-export async function po2mo({
+async function getConvertJobsFromArgs({
   config: configPath,
-  cwd: cwdParam,
+  cwd,
   input,
   output,
-  recursive = false,
-}: {
-  config?: string
-  cwd?: string
-  input?: string | null
-  output?: string
-  recursive?: boolean
-}) {
-  const cwd = cwdParam ?? process.cwd()
-
+  recursive,
+}: CliArgs): Promise<Promise<void>[]> {
   if (configPath) {
     if (input || output || recursive) {
       logger.warn('Cannot use --config with other options')
@@ -61,32 +54,28 @@ export async function po2mo({
     const convertJobs: Promise<void>[] = config.files.map(({ input, output }) =>
       convertPoToMo(join(cwd, input), join(cwd, output))
     )
-
-    await Promise.all(convertJobs)
-    return
+    return convertJobs
   }
 
   if (input) {
     if (input.endsWith('.po')) {
       if (output) {
         if (output.endsWith('.mo')) {
-          await convertPoToMo(resolve(cwd, input), resolve(cwd, output))
-          return
+          return [convertPoToMo(resolve(cwd, input), resolve(cwd, output))]
         }
         if ((await stat(output)).isDirectory()) {
           const filename = input.split('/').pop()?.replace('.po', '.mo')
-          await convertPoToMo(
-            resolve(cwd, input),
-            resolve(cwd, output, filename!)
-          )
-          return
+          return [
+            convertPoToMo(resolve(cwd, input), resolve(cwd, output, filename!)),
+          ]
         }
       }
-      await convertPoToMo(
-        resolve(cwd, input),
-        resolve(cwd, input.replace('.po', '.mo'))
-      )
-      return
+      return [
+        convertPoToMo(
+          resolve(cwd, input),
+          resolve(cwd, input.replace('.po', '.mo'))
+        ),
+      ]
     }
 
     const poEntries = await getPoEntries(resolve(cwd, input), recursive)
@@ -101,7 +90,13 @@ export async function po2mo({
       return convertPoToMo(poEntry, poEntry.replace('.po', '.mo'))
     })
 
-    await Promise.all(convertJobs)
-    return
+    return convertJobs
   }
+
+  return []
+}
+
+export async function po2mo(args: CliArgs) {
+  const convertJobs = await getConvertJobsFromArgs(args)
+  Promise.all(convertJobs)
 }
