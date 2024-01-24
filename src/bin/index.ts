@@ -40,9 +40,10 @@ function parseCliArgs(argv: string[]) {
       '--recursive': Boolean,
       '--version': Boolean,
 
+      '-v': '--version',
+      '-h': '--help',
       '-o': '--output',
       '-r': '--recursive',
-      '-v': '--version',
     },
     {
       // When `permissive` set to true, add unknown args to `result._` array
