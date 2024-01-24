@@ -2,6 +2,7 @@ import { readFile, readdir, writeFile, stat } from 'fs/promises'
 import { join, resolve } from 'path'
 import { po, mo } from 'gettext-parser'
 import { logger } from './utils'
+import { CliArgs } from './bin'
 
 type Po2MoConfig = {
   files: {
@@ -33,20 +34,29 @@ async function getPoEntries(entry: string, recursive: boolean) {
   return poEntries
 }
 
-export async function po2mo({
+async function isInputPoFile(input: string) {
+  return (await stat(input)).isFile() && input.endsWith('.po')
+}
+
+async function isInputDirectory(input: string) {
+  return (await stat(input)).isDirectory()
+}
+
+async function isValidInput(input: string) {
+  return (await isInputPoFile(input)) || (await isInputDirectory(input))
+}
+
+async function getConvertJobsFromArgs({
   config: configPath,
-  cwd: cwdParam,
+  cwd,
   input,
   output,
-  recursive = false,
-}: {
-  config?: string
-  cwd?: string
-  input?: string | null
-  output?: string
-  recursive?: boolean
-}) {
-  const cwd = cwdParam ?? process.cwd()
+  recursive,
+}: CliArgs): Promise<Promise<void>[]> {
+  if (!input) {
+    // If no input, attempt to use config at cwd
+    configPath ??= join(cwd, 'po2mo.json')
+  }
 
   if (configPath) {
     if (input || output || recursive) {
@@ -61,47 +71,70 @@ export async function po2mo({
     const convertJobs: Promise<void>[] = config.files.map(({ input, output }) =>
       convertPoToMo(join(cwd, input), join(cwd, output))
     )
-
-    await Promise.all(convertJobs)
-    return
+    return convertJobs
   }
 
-  if (input) {
-    if (input.endsWith('.po')) {
-      if (output) {
-        if (output.endsWith('.mo')) {
-          await convertPoToMo(resolve(cwd, input), resolve(cwd, output))
-          return
-        }
-        if ((await stat(output)).isDirectory()) {
-          const filename = input.split('/').pop()?.replace('.po', '.mo')
-          await convertPoToMo(
-            resolve(cwd, input),
-            resolve(cwd, output, filename!)
-          )
-          return
-        }
-      }
-      await convertPoToMo(
-        resolve(cwd, input),
-        resolve(cwd, input.replace('.po', '.mo'))
-      )
-      return
+  // Ensure input is provided once config is ruled out
+  if (!input) {
+    throw new Error('No input is provided')
+  }
+
+  if (!isValidInput(input)) {
+    throw new Error(`${input} is not a file or directory`)
+  }
+
+  if (await isInputPoFile(input)) {
+    if (output) {
+      const poFilename = input.split('/').pop()!
+      const moFilename = poFilename?.replace('.po', '.mo')
+      output = output.endsWith('.mo') ? output : join(output, moFilename)
+
+      return [convertPoToMo(resolve(cwd, input), resolve(cwd, output))]
     }
 
+    return [
+      convertPoToMo(
+        resolve(cwd, input),
+        resolve(cwd, input.replace('.po', '.mo'))
+      ),
+    ]
+  }
+
+  if (await isInputDirectory(input)) {
     const poEntries = await getPoEntries(resolve(cwd, input), recursive)
     const convertJobs: Promise<void>[] = poEntries.map((poEntry) => {
+      if (!isInputPoFile(poEntry)) {
+        throw new Error(`${poEntry} is not a .po file`)
+      }
+
       if (output) {
         if (output.endsWith('.mo')) {
           throw new Error('Output path is not a directory')
         }
-        const filename = poEntry.split('/').pop()?.replace('.po', '.mo')
-        return convertPoToMo(poEntry, resolve(cwd, output, filename!))
+
+        const poFilename = poEntry.split('/').pop()!
+        const moFilename = poFilename?.replace('.po', '.mo')
+        return convertPoToMo(poEntry, resolve(cwd, output, moFilename))
       }
+
       return convertPoToMo(poEntry, poEntry.replace('.po', '.mo'))
     })
 
-    await Promise.all(convertJobs)
+    return convertJobs
+  }
+
+  return []
+}
+
+export async function po2mo({ input, config, ...args }: CliArgs) {
+  const convertJobs = await getConvertJobsFromArgs({ input, config, ...args })
+
+  if (!convertJobs.length) {
+    logger.warn(
+      `No ${config ? 'config' : '.po file'} found in path: ${config ?? input}`
+    )
     return
   }
+
+  Promise.all(convertJobs)
 }

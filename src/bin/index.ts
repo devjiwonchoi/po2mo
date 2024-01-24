@@ -4,14 +4,14 @@ import { po2mo } from '../convert'
 import { exit, logger, paint } from '../utils'
 import { version } from '../../package.json'
 
-type CliArgs = {
+export type CliArgs = {
   input?: string
   config?: string
-  cwd?: string
   output?: string
   help?: boolean
-  recursive?: boolean
   version?: boolean
+  cwd: string
+  recursive: boolean
 }
 
 const helpMessage = `
@@ -55,7 +55,7 @@ function parseCliArgs(argv: string[]) {
   const parsedArgs: CliArgs = {
     input,
     config: args['--config'],
-    cwd: args['--cwd'],
+    cwd: args['--cwd'] ?? process.cwd(),
     output: args['--output'],
     help: !!args['--help'],
     recursive: !!args['--recursive'],
