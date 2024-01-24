@@ -10,6 +10,8 @@
   </a>
 </p>
 
+> Note: wildcard `*` is no longer supported in v1.5.0 and above. Please check the [migration guide](./migration.md).
+
 ## Usage
 
 Create a `po2mo.json` file at the root of your project.
@@ -24,12 +26,7 @@ Set a relative path from the root of your project to the input and expected outp
 {
   "files": [
     {
-      "input": "./locale/ko/before.po",
-      "output": "./locale/ko/after.mo"
-    },
-    {
-      "input": "./locale/fr/before.po",
-      "output": "./locale/fr/after.mo"
+      "input": "./locale/ko/messages.po",
     }
   ]
 }
@@ -41,49 +38,34 @@ Run `po2mo` via [npx](https://docs.npmjs.com/cli/v10/commands/npx).
 npx po2mo
 ```
 
-### Wildcard
-
-Using `/*` wildcard will match all `.po` files in the directory and convert to the equivalent filename.
-
-```json
-{
-  "files": [
-    {
-      "input": "./locale/ko/*",
-      "output": "./locale/ko/*"
-    },
-    {
-      "input": "./locale/fr/*",
-      "output": "./locale/fr/*"
-    }
-  ]
-}
-```
-
-Using `/**/*` wildcard will recursively match all `.po` files within the directory and convert to the equivalent filename.
-
-```json
-{
-  "files": [
-    {
-      "input": "./locale/**/*",
-      "output": "./locale/**/*"
-    }
-  ]
-}
-```
-
-### Executables
-
-You can download the executable files from the [releases](https://github.com/devjiwonchoi/po2mo/releases) or directly from the [exec](https://github.com/devjiwonchoi/po2mo/tree/main/exec) directory.
+This will generate a `.mo` file in the same directory as the input file.
 
 ```bash
-// Mac
-./po2mo-macos
+./locale/ko/messages.mo
+```
 
-// Windows
-./po2mo-win.exe
+To convert all `.po` files within the directory, set the input path to the directory.
 
-// Linux
-./po2mo-linux
+```json
+{
+  "files": [
+    {
+      "input": "./locale/ko"
+    }
+  ]
+}
+
+```
+
+To convert all `.po` files recursively within the directory, set the `recursive` option to `true`.
+
+```json
+{
+  "files": [
+    {
+      "input": "./locale",
+      "recursive": true
+    }
+  ]
+}
 ```
