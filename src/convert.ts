@@ -34,6 +34,18 @@ async function getPoEntries(entry: string, recursive: boolean) {
   return poEntries
 }
 
+async function isInputPoFile(input: string) {
+  return (await stat(input)).isFile() && input.endsWith('.po')
+}
+
+async function isInputDirectory(input: string) {
+  return (await stat(input)).isDirectory()
+}
+
+async function isValidInput(input: string) {
+  return (await isInputPoFile(input)) || (await isInputDirectory(input))
+}
+
 async function getConvertJobsFromArgs({
   config: configPath,
   cwd,
@@ -57,36 +69,49 @@ async function getConvertJobsFromArgs({
     return convertJobs
   }
 
-  if (input) {
-    if (input.endsWith('.po')) {
-      if (output) {
-        if (output.endsWith('.mo')) {
-          return [convertPoToMo(resolve(cwd, input), resolve(cwd, output))]
-        }
-        if ((await stat(output)).isDirectory()) {
-          const filename = input.split('/').pop()?.replace('.po', '.mo')
-          return [
-            convertPoToMo(resolve(cwd, input), resolve(cwd, output, filename!)),
-          ]
-        }
-      }
-      return [
-        convertPoToMo(
-          resolve(cwd, input),
-          resolve(cwd, input.replace('.po', '.mo'))
-        ),
-      ]
+  // TODO: look for po2mo.json in cwd
+  if (!input) {
+    return []
+  }
+
+  if (!isValidInput(input)) {
+    throw new Error(`${input} is not a file or directory`)
+  }
+
+  if (await isInputPoFile(input)) {
+    if (output) {
+      const poFilename = input.split('/').pop()!
+      const moFilename = poFilename?.replace('.po', '.mo')
+      output = output.endsWith('.mo') ? output : join(output, moFilename)
+
+      return [convertPoToMo(resolve(cwd, input), resolve(cwd, output))]
     }
 
+    return [
+      convertPoToMo(
+        resolve(cwd, input),
+        resolve(cwd, input.replace('.po', '.mo'))
+      ),
+    ]
+  }
+
+  if (await isInputDirectory(input)) {
     const poEntries = await getPoEntries(resolve(cwd, input), recursive)
     const convertJobs: Promise<void>[] = poEntries.map((poEntry) => {
+      if (!isInputPoFile(poEntry)) {
+        throw new Error(`${poEntry} is not a .po file`)
+      }
+
       if (output) {
         if (output.endsWith('.mo')) {
           throw new Error('Output path is not a directory')
         }
-        const filename = poEntry.split('/').pop()?.replace('.po', '.mo')
-        return convertPoToMo(poEntry, resolve(cwd, output, filename!))
+
+        const poFilename = poEntry.split('/').pop()!
+        const moFilename = poFilename?.replace('.po', '.mo')
+        return convertPoToMo(poEntry, resolve(cwd, output, moFilename))
       }
+
       return convertPoToMo(poEntry, poEntry.replace('.po', '.mo'))
     })
 
@@ -98,5 +123,15 @@ async function getConvertJobsFromArgs({
 
 export async function po2mo(args: CliArgs) {
   const convertJobs = await getConvertJobsFromArgs(args)
+
+  if (!convertJobs.length) {
+    logger.warn(
+      `No ${args.config ? 'config' : '.po file'} found in ${
+        args.config ?? args.input
+      }`
+    )
+    return
+  }
+
   Promise.all(convertJobs)
 }
