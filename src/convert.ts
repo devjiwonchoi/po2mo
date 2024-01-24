@@ -53,6 +53,11 @@ async function getConvertJobsFromArgs({
   output,
   recursive,
 }: CliArgs): Promise<Promise<void>[]> {
+  if (!input) {
+    // If no input, attempt to use config at cwd
+    configPath ??= join(cwd, 'po2mo.json')
+  }
+
   if (configPath) {
     if (input || output || recursive) {
       logger.warn('Cannot use --config with other options')
@@ -69,9 +74,9 @@ async function getConvertJobsFromArgs({
     return convertJobs
   }
 
-  // TODO: look for po2mo.json in cwd
+  // Ensure input is provided once config is ruled out
   if (!input) {
-    return []
+    throw new Error('No input is provided')
   }
 
   if (!isValidInput(input)) {
@@ -121,14 +126,12 @@ async function getConvertJobsFromArgs({
   return []
 }
 
-export async function po2mo(args: CliArgs) {
-  const convertJobs = await getConvertJobsFromArgs(args)
+export async function po2mo({ input, config, ...args }: CliArgs) {
+  const convertJobs = await getConvertJobsFromArgs({ input, config, ...args })
 
   if (!convertJobs.length) {
     logger.warn(
-      `No ${args.config ? 'config' : '.po file'} found in ${
-        args.config ?? args.input
-      }`
+      `No ${config ? 'config' : '.po file'} found in path: ${config ?? input}`
     )
     return
   }
