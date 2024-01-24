@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import path from 'path'
 import arg from 'arg'
 import { po2mo } from '../convert'
 import { exit, logger, paint } from '../utils'
