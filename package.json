@@ -47,5 +47,6 @@
     "i18n",
     "l10n",
     "translate"
-  ]
+  ],
+  "packageManager": "pnpm@8.9.0"
 }
