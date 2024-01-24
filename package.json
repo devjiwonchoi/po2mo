@@ -7,10 +7,7 @@
   "bin": "./dist/bin/cli.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build:exec": "pkg . --out-path exec --targets node18-linux-x64,node18-macos-x64,node18-win-x64 --overwrite",
-    "build:src": "bunchee",
-    "build": "pnpm run build:src && pnpm run build:exec",
-    "clean": "rm -rf dist",
+    "build": "bunchee",
     "test": "jest"
   },
   "dependencies": {
@@ -24,7 +21,6 @@
     "@types/node": "^20.11.5",
     "bunchee": "^4.4.1",
     "jest": "^29.7.0",
-    "pkg": "^5.8.1",
     "ts-jest": "^29.1.1",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"
