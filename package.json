@@ -3,9 +3,7 @@
   "version": "1.4.0",
   "description": "PO to MO, it's simple.",
   "license": "MIT",
-  "main": "./dist/index.js",
-  "bin": "./dist/bin/cli.js",
-  "types": "./dist/index.d.ts",
+  "bin": "./dist/cli.js",
   "scripts": {
     "build": "bunchee",
     "test": "jest"
