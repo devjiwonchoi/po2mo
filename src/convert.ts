@@ -46,7 +46,20 @@ async function isValidInput(input: string) {
   return (await isInputPoFile(input)) || (await isInputDirectory(input))
 }
 
-async function getConvertJobsFromArgs({
+function getConvertJobs(cwd: string, input: string, output?: string) {
+  const resolvedInput = resolve(cwd, input)
+  if (output) {
+    const poFilename = input.split('/').pop()!
+    const moFilename = poFilename.replace('.po', '.mo')
+
+    const resolvedOutput = resolve(cwd, output, moFilename)
+    return convertPoToMo(resolvedInput, resolvedOutput)
+  }
+
+  return convertPoToMo(resolvedInput, resolvedInput.replace('.po', '.mo'))
+}
+
+async function getConvertPromises({
   config,
   cwd: cwdParam,
   input,
@@ -56,9 +69,10 @@ async function getConvertJobsFromArgs({
   const cwd = cwdParam ?? process.cwd()
 
   if (config) {
-    const configPath = !config.endsWith('po2mo.json')
-      ? resolve(config, 'po2mo.json')
-      : resolve(config)
+    const configPath = resolve(
+      config,
+      !config.endsWith('po2mo.json') ? 'po2mo.json' : ''
+    )
 
     const configValue: Po2MoConfig = await import(configPath)
     const convertJobs: Promise<void>[] = configValue.files.map(
@@ -68,7 +82,6 @@ async function getConvertJobsFromArgs({
     return convertJobs
   }
 
-  // Ensure input is provided once config is ruled out
   if (!input) {
     logger.warn(
       `No input was provided. Looking for the 'locale' directory in ${cwd}...`
@@ -76,8 +89,9 @@ async function getConvertJobsFromArgs({
 
     // Look for `locale` directory in cwd and convert recursively
     const localeDir = join(cwd, 'locale')
+    // fs.promises.stat is case-insensitive, therefore 'Locale' will also be accepted
     if (await isInputDirectory(localeDir)) {
-      return getConvertJobsFromArgs({
+      return getConvertPromises({
         input: localeDir,
         output: output ?? localeDir,
         recursive: true,
@@ -92,39 +106,19 @@ async function getConvertJobsFromArgs({
   }
 
   if (await isInputPoFile(input)) {
-    const resolvedInput = resolve(cwd, input)
-
-    if (output) {
-      const poFilename = input.split('/').pop()!
-      const moFilename = poFilename.replace('.po', '.mo')
-
-      const resolvedOutput = output.endsWith('.mo')
-        ? output
-        : join(output, moFilename)
-
-      return [convertPoToMo(resolvedInput, resolve(cwd, resolvedOutput))]
-    }
-
-    return [convertPoToMo(resolvedInput, resolvedInput.replace('.po', '.mo'))]
+    return [getConvertJobs(cwd, input, output)]
   }
 
   if (await isInputDirectory(input)) {
     const poEntries = await getPoEntries(resolve(cwd, input), recursive)
 
     if (output?.endsWith('.mo')) {
-      throw new Error('Output path is not a directory')
+      throw new Error('Input is a directory, but the output is a file.')
     }
 
-    const convertJobs: Promise<void>[] = poEntries.map((poEntry) => {
-      if (output) {
-        const poFilename = poEntry.split('/').pop()!
-        const moFilename = poFilename.replace('.po', '.mo')
-        return convertPoToMo(poEntry, resolve(cwd, output, moFilename))
-      }
-
-      return convertPoToMo(poEntry, poEntry.replace('.po', '.mo'))
-    })
-
+    const convertJobs: Promise<void>[] = poEntries.map((poEntry) =>
+      getConvertJobs(cwd, poEntry, output)
+    )
     return convertJobs
   }
 
@@ -132,14 +126,14 @@ async function getConvertJobsFromArgs({
 }
 
 export async function po2mo({ input, config, ...args }: CliArgs) {
-  const convertJobs = await getConvertJobsFromArgs({ input, config, ...args })
+  const convertPromises = await getConvertPromises({ input, config, ...args })
 
-  if (!convertJobs.length) {
+  if (!convertPromises.length) {
     logger.warn(
       `No ${config ? 'config' : '.po file'} found in path: ${config ?? input}`
     )
     return
   }
 
-  Promise.all(convertJobs)
+  Promise.all(convertPromises)
 }
