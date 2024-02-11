@@ -6,9 +6,11 @@ import { resolve } from 'path'
 export async function runTest({
   args,
   fixturesDir,
+  moPath,
 }: {
   args: string[]
   fixturesDir?: string
+  moPath?: string
 }) {
   if (fixturesDir) {
     args.push('--cwd', fixturesDir)
@@ -26,6 +28,14 @@ export async function runTest({
     cp.stderr.on('data', (chunk) => (stderr += chunk.toString()))
     cp.on('close', resolve)
   })
+  if (stdout) console.log(stdout)
+  if (stderr) console.error(stderr)
 
+  if (moPath) {
+    expect(existsSync(moPath)).toBe(true)
+    await unlink(moPath)
+  }
+
+  expect(code).toBe(0)
   return { stderr, stdout, code }
 }
