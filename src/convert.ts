@@ -104,7 +104,7 @@ async function getConvertPromises({
   return []
 }
 
-export async function po2mo({ input, config, ...args }: CliArgs) {
+export async function po2mo({ input, config, cwd, ...args }: CliArgs) {
   const convertPromises: Promise<void>[] = []
 
   if (config) {
@@ -123,15 +123,15 @@ export async function po2mo({ input, config, ...args }: CliArgs) {
               input: file.input,
               output: file.output,
               recursive: file.recursive ?? false,
-              cwd: config.replace('/po2mo.json', ''),
+              cwd,
             })
           )
         )
       ).flat()
     )
+  } else {
+    convertPromises.push(...(await getConvertPromises({ input, ...args })))
   }
-
-  convertPromises.push(...(await getConvertPromises({ input, ...args })))
 
   if (!convertPromises.length) {
     logger.warn(
