@@ -1,9 +1,10 @@
 import type { CliArgs, Po2MoConfig } from './types'
 
-import { readFile, readdir, writeFile, stat } from 'fs/promises'
+import { readFile, readdir, writeFile, stat, mkdir } from 'fs/promises'
 import { join, resolve } from 'path'
 import { po, mo } from 'gettext-parser'
 import { logger } from './utils'
+import { existsSync } from 'fs'
 
 async function convertPoToMo(input: string, output: string): Promise<void> {
   const poFile = await readFile(input, 'utf-8')
@@ -47,10 +48,15 @@ async function isValidInput(input: string) {
 function getConvertJobs(cwd: string, input: string, output?: string) {
   const resolvedInput = resolve(cwd, input)
   if (output) {
+    if (output.endsWith('.mo')) {
+      return convertPoToMo(resolvedInput, resolve(cwd, output))
+    }
+
     const poFilename = input.split('/').pop()!
     const moFilename = poFilename.replace('.po', '.mo')
 
     const resolvedOutput = resolve(cwd, output, moFilename)
+    existsSync(output) || mkdir(output, { recursive: true })
     return convertPoToMo(resolvedInput, resolvedOutput)
   }
 
