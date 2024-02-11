@@ -16,16 +16,18 @@ async function getPoEntries(entry: string, recursive: boolean) {
   const poEntries: string[] = []
 
   const dirents = await readdir(entry, { withFileTypes: true })
-  dirents.forEach((dirent) => {
+  for (const dirent of dirents) {
     const direntPath = join(entry, dirent.name)
+
     if (dirent.isDirectory()) {
-      if (!recursive) return
-      getPoEntries(direntPath, recursive)
+      if (!recursive) continue
+      poEntries.push(...(await getPoEntries(direntPath, recursive)))
     }
+
     if (dirent.isFile() && dirent.name.endsWith('.po')) {
       poEntries.push(direntPath)
     }
-  })
+  }
 
   return poEntries
 }
