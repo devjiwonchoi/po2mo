@@ -1,15 +1,9 @@
+import type { CliArgs, Po2MoConfig } from './types'
+
 import { readFile, readdir, writeFile, stat } from 'fs/promises'
 import { join, resolve } from 'path'
 import { po, mo } from 'gettext-parser'
 import { logger } from './utils'
-import { CliArgs } from './bin'
-
-type Po2MoConfig = {
-  files: {
-    input: string
-    output: string
-  }[]
-}
 
 async function convertPoToMo(input: string, output: string): Promise<void> {
   const poFile = await readFile(input, 'utf-8')

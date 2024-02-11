@@ -1,18 +1,10 @@
 #!/usr/bin/env node
+import type { CliArgs } from '../types'
+
 import arg from 'arg'
 import { po2mo } from '../convert'
 import { exit, logger, paint } from '../utils'
 import { version } from '../../package.json'
-
-export type CliArgs = {
-  input?: string
-  config?: string
-  output?: string
-  cwd?: string
-  help?: boolean
-  version?: boolean
-  recursive: boolean
-}
 
 const helpMessage = `
 Usage: po2mo [options]
