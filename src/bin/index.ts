@@ -1,18 +1,10 @@
 #!/usr/bin/env node
+import type { CliArgs } from '../types'
+
 import arg from 'arg'
 import { po2mo } from '../convert'
 import { exit, logger, paint } from '../utils'
 import { version } from '../../package.json'
-
-export type CliArgs = {
-  input?: string
-  config?: string
-  output?: string
-  help?: boolean
-  version?: boolean
-  cwd: string
-  recursive: boolean
-}
 
 const helpMessage = `
 Usage: po2mo [options]
@@ -56,7 +48,7 @@ function parseCliArgs(argv: string[]) {
   const parsedArgs: CliArgs = {
     input,
     config: args['--config'],
-    cwd: args['--cwd'] ?? process.cwd(),
+    cwd: args['--cwd'],
     output: args['--output'],
     help: !!args['--help'],
     recursive: !!args['--recursive'],
