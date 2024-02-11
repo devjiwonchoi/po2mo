@@ -1,0 +1,8 @@
+{
+  "files": [
+    {
+      "input": "./basic",
+      "output": "./basic/output"
+    }
+  ]
+}

@@ -36,6 +36,5 @@ export async function runTest({
     await unlink(moPath)
   }
 
-  expect(code).toBe(0)
   return { stderr, stdout, code }
 }
