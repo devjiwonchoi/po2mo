@@ -13,8 +13,9 @@ async function convertPoToMo(input: string, output: string): Promise<void> {
 }
 
 async function getPoEntries(entry: string, recursive: boolean) {
-  const dirents = await readdir(entry, { withFileTypes: true })
   const poEntries: string[] = []
+
+  const dirents = await readdir(entry, { withFileTypes: true })
   dirents.forEach((dirent) => {
     const direntPath = join(entry, dirent.name)
     if (dirent.isDirectory()) {
@@ -25,6 +26,7 @@ async function getPoEntries(entry: string, recursive: boolean) {
       poEntries.push(direntPath)
     }
   })
+
   return poEntries
 }
 
@@ -77,7 +79,7 @@ async function getConvertPromises({
   }
 
   if (!input) {
-    logger.warn(
+    logger.info(
       `No input was provided. Looking for the 'locale' directory in ${cwd}...`
     )
 
