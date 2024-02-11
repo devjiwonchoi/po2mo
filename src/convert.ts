@@ -1,10 +1,10 @@
 import type { CliArgs, Po2MoConfig } from './types'
 
-import { readFile, readdir, writeFile, stat, mkdir } from 'fs/promises'
+import { existsSync } from 'fs'
+import { readFile, readdir, writeFile, mkdir } from 'fs/promises'
 import { join, resolve } from 'path'
 import { po, mo } from 'gettext-parser'
-import { logger } from './utils'
-import { existsSync } from 'fs'
+import { isInputDirectory, isInputFile, isValidInput, logger } from './utils'
 
 async function convertPoToMo(input: string, output: string): Promise<void> {
   const poFile = await readFile(input, 'utf-8')
@@ -31,18 +31,6 @@ async function getPoEntries(entry: string, recursive: boolean) {
   }
 
   return poEntries
-}
-
-async function isInputPoFile(input: string) {
-  return (await stat(input)).isFile() && input.endsWith('.po')
-}
-
-async function isInputDirectory(input: string) {
-  return (await stat(input)).isDirectory()
-}
-
-async function isValidInput(input: string) {
-  return (await isInputPoFile(input)) || (await isInputDirectory(input))
 }
 
 function getConvertJobs(cwd: string, input: string, output?: string) {
@@ -106,10 +94,10 @@ async function getConvertPromises({
   }
 
   if (!isValidInput(input)) {
-    throw new Error(`${input} is not a file or directory.`)
+    throw new Error(`${input} is not a .po file or directory.`)
   }
 
-  if (await isInputPoFile(input)) {
+  if (await isInputFile(input)) {
     return [getConvertJobs(cwd, input, output)]
   }
 
