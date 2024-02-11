@@ -69,6 +69,11 @@ describe('cli', () => {
     await handleTest([], moPath)
   })
 
+  it('should convert based on config', async () => {
+    const moPath = join(fixturesDir, 'config', 'config.mo')
+    await handleTest(['--config', join(fixturesDir, 'config')], moPath)
+  })
+
   it('should convert if input is a file', async () => {
     const moPath = join(fixturesDir, 'input', 'input.mo')
     await handleTest([join(fixturesDir, 'input', 'input.po')], moPath)
@@ -104,20 +109,3 @@ describe('cli', () => {
     await handleTest([join(fixturesDir, 'input'), '-r'], moPath)
   })
 })
-
-// TODO: Add tests for the following:
-// - version
-// - help
-// - config
-// - cwd
-
-// input tests
-// - no input
-// - input is a file
-// - input is a file with output as a file
-// - input is a file with output as a directory
-// - input is a directory
-// - input is a directory with recursive
-// - input is a directory with output as a file
-// - input is a directory with output as a directory
-// - input is a directory with output as a directory with recursive

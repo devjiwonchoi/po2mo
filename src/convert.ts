@@ -52,27 +52,14 @@ function getConvertJobs(cwd: string, input: string, output?: string) {
 }
 
 async function getConvertPromises({
-  config,
   cwd: cwdParam,
   input,
   output,
   recursive,
 }: CliArgs): Promise<Promise<void>[]> {
   const cwd = cwdParam ?? process.cwd()
-
-  if (config) {
-    const configPath = resolve(
-      config,
-      !config.endsWith('po2mo.json') ? 'po2mo.json' : ''
-    )
-
-    const configValue: Po2MoConfig = await import(configPath)
-    const convertJobs: Promise<void>[] = configValue.files.map(
-      ({ input, output }) =>
-        convertPoToMo(resolve(cwd, input), join(cwd, output))
-    )
-    return convertJobs
-  }
+  input &&= resolve(cwd, input)
+  output &&= resolve(cwd, output)
 
   if (!input) {
     logger.info(
@@ -81,7 +68,7 @@ async function getConvertPromises({
 
     // Look for `locale` directory in cwd and convert recursively
     const localeDir = join(cwd, 'locale')
-    // fs.promises.stat is case-insensitive, therefore 'Locale' will also be accepted
+    // TODO: Allow case-insensitive dir like `Locale`.
     if (await isInputDirectory(localeDir)) {
       return getConvertPromises({
         input: localeDir,
@@ -118,7 +105,33 @@ async function getConvertPromises({
 }
 
 export async function po2mo({ input, config, ...args }: CliArgs) {
-  const convertPromises = await getConvertPromises({ input, config, ...args })
+  const convertPromises: Promise<void>[] = []
+
+  if (config) {
+    const configPath = resolve(
+      config,
+      !config.endsWith('po2mo.json') ? 'po2mo.json' : ''
+    )
+
+    const configValue: Po2MoConfig = await import(configPath)
+    // TODO: Refactor
+    convertPromises.push(
+      ...(
+        await Promise.all(
+          configValue.files.map((file) =>
+            getConvertPromises({
+              input: file.input,
+              output: file.output,
+              recursive: file.recursive ?? false,
+              cwd: config.replace('/po2mo.json', ''),
+            })
+          )
+        )
+      ).flat()
+    )
+  }
+
+  convertPromises.push(...(await getConvertPromises({ input, ...args })))
 
   if (!convertPromises.length) {
     logger.warn(
