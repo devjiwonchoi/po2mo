@@ -11,4 +11,35 @@ describe('config', () => {
       moPath: join(fixturesDir, 'basic', 'input.mo'),
     })
   })
+
+  it('should convert input as directory', async () => {
+    await runTest({
+      args: ['--config', resolve(__dirname, 'fixtures', 'input-as-dir')],
+      fixturesDir,
+      moPath: join(fixturesDir, 'basic', 'input.mo'),
+    })
+  })
+
+  it('should warn when attempt to convert input as file with recursive', async () => {
+    const { stderr } = await runTest({
+      args: [
+        '--config',
+        resolve(__dirname, 'fixtures', 'input-as-file', 'recursive'),
+      ],
+      fixturesDir,
+    })
+
+    expect(stderr).toMatch(/Cannot use --recursive with a file input./)
+  })
+
+  it('should convert input as directory with recursive', async () => {
+    await runTest({
+      args: [
+        '--config',
+        resolve(__dirname, 'fixtures', 'input-as-dir', 'recursive'),
+      ],
+      fixturesDir,
+      moPath: join(fixturesDir, 'basic', 'input.mo'),
+    })
+  })
 })

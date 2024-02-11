@@ -1,0 +1,8 @@
+{
+  "files": [
+    {
+      "input": "./basic",
+      "recursive": true
+    }
+  ]
+}

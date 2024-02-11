@@ -85,6 +85,9 @@ async function getConvertPromises({
   }
 
   if (await isInputFile(input)) {
+    if (recursive) {
+      logger.warn('Cannot use --recursive with a file input.')
+    }
     return [getConvertJobs(cwd, input, output)]
   }
 

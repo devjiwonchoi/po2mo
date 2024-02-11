@@ -1,0 +1,8 @@
+{
+  "files": [
+    {
+      "input": "./basic/input.po",
+      "recursive": true
+    }
+  ]
+}
