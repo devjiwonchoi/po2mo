@@ -133,16 +133,16 @@ export async function po2mo({ input, config, cwd, ...args }: CliArgs) {
       !config.endsWith('po2mo.json') ? 'po2mo.json' : ''
     )
 
-    const configValue: Po2MoConfig = await import(configPath)
+    const { tasks }: Po2MoConfig = await import(configPath)
     // TODO: Refactor
     convertPromises.push(
       ...(
         await Promise.all(
-          configValue.files.map((file) =>
+          tasks.map((task) =>
             getConvertPromises({
-              input: file.input,
-              output: file.output,
-              recursive: file.recursive ?? false,
+              input: task.input,
+              output: task.output,
+              recursive: task.recursive ?? false,
               cwd,
             })
           )

@@ -1,5 +1,5 @@
 export type Po2MoConfig = {
-  files: {
+  tasks: {
     input: string
     output?: string
     recursive?: boolean
