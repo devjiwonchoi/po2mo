@@ -5,15 +5,15 @@ import { resolve } from 'path'
 
 export async function runTest({
   args,
-  fixturesDir,
+  tempDir,
   moPath,
 }: {
   args: string[]
-  fixturesDir?: string
+  tempDir?: string
   moPath?: string | string[]
 }) {
-  if (fixturesDir) {
-    args.push('--cwd', fixturesDir)
+  if (tempDir) {
+    args.push('--cwd', tempDir)
   }
 
   const cp = spawn(

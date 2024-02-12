@@ -1,22 +1,35 @@
-import { join, resolve } from 'path'
+import { execSync } from 'child_process'
+import { mkdirSync, rmSync } from 'fs'
+import { tmpdir } from 'os'
+import { join } from 'path'
 import { runTest } from '../../test-utils'
 
 const fixturesDir = join(__dirname, 'fixtures')
+const tempDir = join(tmpdir(), 'base')
+
+beforeAll(() => {
+  mkdirSync(tempDir, { recursive: true })
+  execSync(`cp -r ${fixturesDir}/* ${tempDir}`)
+})
+
+afterAll(() => {
+  rmSync(tempDir, { recursive: true, force: true })
+})
 
 describe('base', () => {
   it('should convert input as file', async () => {
     await runTest({
       args: ['./input.po'],
-      fixturesDir,
-      moPath: join(fixturesDir, 'input.mo'),
+      tempDir,
+      moPath: join(tempDir, 'input.mo'),
     })
   })
 
   it('should warn when attempt to convert input as file with recursive', async () => {
     const { stderr } = await runTest({
       args: ['./input.po', '-r'],
-      fixturesDir,
-      moPath: join(fixturesDir, 'input.mo'),
+      tempDir,
+      moPath: join(tempDir, 'input.mo'),
     })
 
     expect(stderr).toMatch(/Cannot use --recursive with a file input./)
@@ -25,35 +38,35 @@ describe('base', () => {
   it('should convert input as file with output as file', async () => {
     await runTest({
       args: ['./input.po', '-o', './output.mo'],
-      fixturesDir,
-      moPath: join(fixturesDir, 'output.mo'),
+      tempDir,
+      moPath: join(tempDir, 'output.mo'),
     })
   })
 
   it('should convert input as file with output as directory', async () => {
     await runTest({
       args: ['./input.po', '-o', './output'],
-      fixturesDir,
-      moPath: join(fixturesDir, 'output', 'input.mo'),
+      tempDir,
+      moPath: join(tempDir, 'output', 'input.mo'),
     })
   })
 
   it('should convert input as directory', async () => {
     await runTest({
       args: ['.'],
-      fixturesDir,
-      moPath: join(fixturesDir, 'input.mo'),
+      tempDir,
+      moPath: join(tempDir, 'input.mo'),
     })
   })
 
   it('should convert input as directory with recursive', async () => {
     await runTest({
       args: ['.', '-r'],
-      fixturesDir,
+      tempDir,
       // TODO: Refactor
       moPath: [
-        join(fixturesDir, 'recursive', 'recursive.mo'),
-        join(fixturesDir, 'input.mo'),
+        join(tempDir, 'recursive', 'recursive.mo'),
+        join(tempDir, 'input.mo'),
       ],
     })
   })
@@ -61,7 +74,7 @@ describe('base', () => {
   it('should throw when attempt to convert input as directory with output as file', async () => {
     const { stderr } = await runTest({
       args: ['.', '-o', './output.mo'],
-      fixturesDir,
+      tempDir,
     })
 
     expect(stderr).toMatch(/Input is a directory, but the output is a file./)
@@ -70,18 +83,18 @@ describe('base', () => {
   it('should convert input as directory with output as directory', async () => {
     await runTest({
       args: ['.', '-o', './output'],
-      fixturesDir,
-      moPath: join(fixturesDir, 'output', 'input.mo'),
+      tempDir,
+      moPath: join(tempDir, 'output', 'input.mo'),
     })
   })
 
   it('should convert input as directory with output as directory with recursive', async () => {
     await runTest({
       args: ['.', '-o', './output', '-r'],
-      fixturesDir,
+      tempDir,
       moPath: [
-        join(fixturesDir, 'output', 'recursive', 'recursive.mo'),
-        join(fixturesDir, 'output', 'input.mo'),
+        join(tempDir, 'output', 'recursive', 'recursive.mo'),
+        join(tempDir, 'output', 'input.mo'),
       ],
     })
   })
