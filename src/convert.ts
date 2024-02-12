@@ -150,7 +150,7 @@ export async function po2mo({ input, config, cwd, ...args }: CliArgs) {
       ).flat()
     )
   } else {
-    convertPromises.push(...(await getConvertPromises({ input, ...args })))
+    convertPromises.push(...(await getConvertPromises({ input, cwd, ...args })))
   }
 
   if (!convertPromises.length) {
