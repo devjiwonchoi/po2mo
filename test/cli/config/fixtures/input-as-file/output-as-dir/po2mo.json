@@ -1,5 +1,5 @@
 {
-  "files": [
+  "tasks": [
     {
       "input": "./input.po",
       "output": "./output"
