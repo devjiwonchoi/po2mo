@@ -19,6 +19,7 @@ describe('config', () => {
         resolve(__dirname, 'fixtures', 'input-as-file', 'recursive'),
       ],
       fixturesDir,
+      moPath: join(fixturesDir, 'input.mo'),
     })
 
     expect(stderr).toMatch(/Cannot use --recursive with a file input./)
