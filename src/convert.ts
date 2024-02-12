@@ -4,6 +4,7 @@ import { existsSync } from 'fs'
 import { readFile, readdir, writeFile, mkdir } from 'fs/promises'
 import { dirname, join, resolve } from 'path'
 import { po, mo } from 'gettext-parser'
+import git from 'simple-git'
 import { isInputDirectory, isInputFile, isValidInput, logger } from './utils'
 
 async function convertPoToMo(input: string, output: string): Promise<void> {
@@ -48,6 +49,7 @@ function getConvertJobs(
     const poFilename = input.split('/').pop()!
     const moFilename = poFilename.replace('.po', '.mo')
 
+    // TODO: Refactor
     const resolvedOutput =
       recursive && inputParam
         ? join(
@@ -80,21 +82,26 @@ async function getConvertPromises({
 
   if (!input) {
     logger.info(
-      `No input was provided. Looking for the 'locale' directory in ${cwd}...`
+      `No input was provided. Converting .po files based on git status.`
     )
 
-    // Look for `locale` directory in cwd and convert recursively
-    const localeDir = join(cwd, 'locale')
-    // TODO: Allow case-insensitive dir like `Locale`.
-    if (await isInputDirectory(localeDir)) {
-      return getConvertPromises({
-        input: localeDir,
-        output: output ?? localeDir,
-        recursive: true,
-      })
+    // TODO: Find a way to test this
+    const { modified, not_added, staged } = await git(cwd).status()
+    // TODO: Understand Set better
+    const poFilesFromGit = [
+      ...new Set(
+        modified
+          .concat(not_added, staged)
+          .filter((file) => file.endsWith('.po'))
+      ),
+    ]
+
+    if (!poFilesFromGit.length) {
+      logger.warn('No .po files found in git status.')
+      return []
     }
 
-    throw new Error(`No 'locale' directory found in ${cwd}.`)
+    return poFilesFromGit.map((poFile) => getConvertJobs(cwd, poFile))
   }
 
   if (!isValidInput(input)) {
