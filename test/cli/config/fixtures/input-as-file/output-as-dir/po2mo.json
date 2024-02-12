@@ -1,8 +1,8 @@
 {
   "files": [
     {
-      "input": "./basic/input.po",
-      "output": "./basic/output"
+      "input": "./input.po",
+      "output": "./output"
     }
   ]
 }

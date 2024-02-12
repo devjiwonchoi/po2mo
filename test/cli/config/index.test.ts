@@ -1,28 +1,14 @@
 import { join, resolve } from 'path'
 import { runTest } from '../../test-utils'
 
-const fixturesDir = resolve(__dirname, '../fixtures')
-
-// 1. input: file
-// 2. input: file, recursive -> warn (deduped1)
-// 3. input: file, output: file
-// 4. input: file, output: file, recursive -> warn (deduped1)
-// 5. input: file, output: directory
-// 6. input: file, output: directory, recursive -> warn (deduped1)
-// 7. input: directory
-// 8. input: directory, recursive
-// 9. input: directory, output: file -> throw (deduped2)
-// 10. input: directory, output: file, recursive -> throw (deduped2)
-// 11. input: directory, output: directory
-// 12. input: directory, output: directory, recursive
-
+const fixturesDir = resolve(__dirname, '../base/fixtures')
 
 describe('config', () => {
   it('should convert input as file', async () => {
     await runTest({
       args: ['--config', resolve(__dirname, 'fixtures', 'input-as-file')],
       fixturesDir,
-      moPath: join(fixturesDir, 'basic', 'input.mo'),
+      moPath: join(fixturesDir, 'input.mo'),
     })
   })
 
@@ -45,7 +31,7 @@ describe('config', () => {
         resolve(__dirname, 'fixtures', 'input-as-file', 'output-as-file'),
       ],
       fixturesDir,
-      moPath: join(fixturesDir, 'basic', 'output.mo'),
+      moPath: join(fixturesDir, 'output.mo'),
     })
   })
 
@@ -56,7 +42,7 @@ describe('config', () => {
         resolve(__dirname, 'fixtures', 'input-as-file', 'output-as-dir'),
       ],
       fixturesDir,
-      moPath: join(fixturesDir, 'basic', 'output', 'input.mo'),
+      moPath: join(fixturesDir, 'output', 'input.mo'),
     })
   })
 
@@ -64,7 +50,7 @@ describe('config', () => {
     await runTest({
       args: ['--config', resolve(__dirname, 'fixtures', 'input-as-dir')],
       fixturesDir,
-      moPath: join(fixturesDir, 'basic', 'input.mo'),
+      moPath: join(fixturesDir, 'input.mo'),
     })
   })
 
@@ -77,8 +63,8 @@ describe('config', () => {
       fixturesDir,
       // TODO: Refactor
       moPath: [
-        join(fixturesDir, 'basic', 'recursive', 'recursive.mo'),
-        join(fixturesDir, 'basic', 'input.mo'),
+        join(fixturesDir, 'recursive', 'recursive.mo'),
+        join(fixturesDir, 'input.mo'),
       ],
     })
   })
@@ -102,7 +88,7 @@ describe('config', () => {
         resolve(__dirname, 'fixtures', 'input-as-dir', 'output-as-dir'),
       ],
       fixturesDir,
-      moPath: join(fixturesDir, 'basic', 'output', 'input.mo'),
+      moPath: join(fixturesDir, 'output', 'input.mo'),
     })
   })
 
@@ -121,8 +107,8 @@ describe('config', () => {
       fixturesDir,
       moPath: [
         // TODO: Maybe when running getPoEntries recursive, need to preserve the folder structure.
-        join(fixturesDir, 'basic', 'output', 'recursive', 'recursive.mo'),
-        join(fixturesDir, 'basic', 'output', 'input.mo'),
+        join(fixturesDir, 'output', 'recursive', 'recursive.mo'),
+        join(fixturesDir, 'output', 'input.mo'),
       ],
     })
   })
