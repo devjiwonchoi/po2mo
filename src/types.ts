@@ -1,7 +1,8 @@
 export type Po2MoConfig = {
   files: {
     input: string
-    output: string
+    output?: string
+    recursive?: boolean
   }[]
 }
 

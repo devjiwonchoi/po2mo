@@ -1,9 +1,10 @@
 import type { CliArgs, Po2MoConfig } from './types'
 
-import { readFile, readdir, writeFile, stat } from 'fs/promises'
-import { join, resolve } from 'path'
+import { existsSync } from 'fs'
+import { readFile, readdir, writeFile, mkdir } from 'fs/promises'
+import { dirname, join, resolve } from 'path'
 import { po, mo } from 'gettext-parser'
-import { logger } from './utils'
+import { isInputDirectory, isInputFile, isValidInput, logger } from './utils'
 
 async function convertPoToMo(input: string, output: string): Promise<void> {
   const poFile = await readFile(input, 'utf-8')
@@ -16,39 +17,50 @@ async function getPoEntries(entry: string, recursive: boolean) {
   const poEntries: string[] = []
 
   const dirents = await readdir(entry, { withFileTypes: true })
-  dirents.forEach((dirent) => {
-    const direntPath = join(entry, dirent.name)
+  for (const dirent of dirents) {
+    const direntPath = join(dirent.path, dirent.name)
     if (dirent.isDirectory()) {
-      if (!recursive) return
-      getPoEntries(direntPath, recursive)
+      if (!recursive) continue
+      poEntries.push(...(await getPoEntries(direntPath, recursive)))
     }
+
     if (dirent.isFile() && dirent.name.endsWith('.po')) {
       poEntries.push(direntPath)
     }
-  })
+  }
 
   return poEntries
 }
 
-async function isInputPoFile(input: string) {
-  return (await stat(input)).isFile() && input.endsWith('.po')
-}
-
-async function isInputDirectory(input: string) {
-  return (await stat(input)).isDirectory()
-}
-
-async function isValidInput(input: string) {
-  return (await isInputPoFile(input)) || (await isInputDirectory(input))
-}
-
-function getConvertJobs(cwd: string, input: string, output?: string) {
+function getConvertJobs(
+  cwd: string,
+  input: string,
+  output?: string,
+  recursive?: boolean,
+  inputParam?: string
+) {
   const resolvedInput = resolve(cwd, input)
   if (output) {
+    if (output.endsWith('.mo')) {
+      return convertPoToMo(resolvedInput, resolve(cwd, output))
+    }
+
     const poFilename = input.split('/').pop()!
     const moFilename = poFilename.replace('.po', '.mo')
 
-    const resolvedOutput = resolve(cwd, output, moFilename)
+    const resolvedOutput =
+      recursive && inputParam
+        ? join(
+            output,
+            input.replace(resolve(cwd, inputParam), '').replace(poFilename, ''),
+            moFilename
+          )
+        : resolve(cwd, output, moFilename)
+
+    const resolvedOutputDir = dirname(resolvedOutput)
+    existsSync(resolvedOutputDir) ||
+      mkdir(resolvedOutputDir, { recursive: true })
+
     return convertPoToMo(resolvedInput, resolvedOutput)
   }
 
@@ -56,27 +68,15 @@ function getConvertJobs(cwd: string, input: string, output?: string) {
 }
 
 async function getConvertPromises({
-  config,
   cwd: cwdParam,
   input,
   output,
   recursive,
 }: CliArgs): Promise<Promise<void>[]> {
   const cwd = cwdParam ?? process.cwd()
-
-  if (config) {
-    const configPath = resolve(
-      config,
-      !config.endsWith('po2mo.json') ? 'po2mo.json' : ''
-    )
-
-    const configValue: Po2MoConfig = await import(configPath)
-    const convertJobs: Promise<void>[] = configValue.files.map(
-      ({ input, output }) =>
-        convertPoToMo(resolve(cwd, input), join(cwd, output))
-    )
-    return convertJobs
-  }
+  const inputParam = input
+  input &&= resolve(cwd, input)
+  output &&= resolve(cwd, output)
 
   if (!input) {
     logger.info(
@@ -85,7 +85,7 @@ async function getConvertPromises({
 
     // Look for `locale` directory in cwd and convert recursively
     const localeDir = join(cwd, 'locale')
-    // fs.promises.stat is case-insensitive, therefore 'Locale' will also be accepted
+    // TODO: Allow case-insensitive dir like `Locale`.
     if (await isInputDirectory(localeDir)) {
       return getConvertPromises({
         input: localeDir,
@@ -98,10 +98,13 @@ async function getConvertPromises({
   }
 
   if (!isValidInput(input)) {
-    throw new Error(`${input} is not a file or directory.`)
+    throw new Error(`${input} is not a .po file or directory.`)
   }
 
-  if (await isInputPoFile(input)) {
+  if (await isInputFile(input)) {
+    if (recursive) {
+      logger.warn('Cannot use --recursive with a file input.')
+    }
     return [getConvertJobs(cwd, input, output)]
   }
 
@@ -113,7 +116,7 @@ async function getConvertPromises({
     }
 
     const convertJobs: Promise<void>[] = poEntries.map((poEntry) =>
-      getConvertJobs(cwd, poEntry, output)
+      getConvertJobs(cwd, poEntry, output, recursive, inputParam)
     )
     return convertJobs
   }
@@ -121,8 +124,34 @@ async function getConvertPromises({
   return []
 }
 
-export async function po2mo({ input, config, ...args }: CliArgs) {
-  const convertPromises = await getConvertPromises({ input, config, ...args })
+export async function po2mo({ input, config, cwd, ...args }: CliArgs) {
+  const convertPromises: Promise<void>[] = []
+
+  if (config) {
+    const configPath = resolve(
+      config,
+      !config.endsWith('po2mo.json') ? 'po2mo.json' : ''
+    )
+
+    const configValue: Po2MoConfig = await import(configPath)
+    // TODO: Refactor
+    convertPromises.push(
+      ...(
+        await Promise.all(
+          configValue.files.map((file) =>
+            getConvertPromises({
+              input: file.input,
+              output: file.output,
+              recursive: file.recursive ?? false,
+              cwd,
+            })
+          )
+        )
+      ).flat()
+    )
+  } else {
+    convertPromises.push(...(await getConvertPromises({ input, cwd, ...args })))
+  }
 
   if (!convertPromises.length) {
     logger.warn(

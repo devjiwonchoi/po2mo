@@ -1,0 +1,9 @@
+{
+  "files": [
+    {
+      "input": ".",
+      "output": "./output",
+      "recursive": true
+    }
+  ]
+}

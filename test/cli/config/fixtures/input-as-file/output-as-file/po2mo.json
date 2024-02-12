@@ -1,0 +1,8 @@
+{
+  "files": [
+    {
+      "input": "./input.po",
+      "output": "./output.mo"
+    }
+  ]
+}
