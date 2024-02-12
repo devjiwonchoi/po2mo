@@ -2,7 +2,7 @@ import type { CliArgs, Po2MoConfig } from './types'
 
 import { existsSync } from 'fs'
 import { readFile, readdir, writeFile, mkdir } from 'fs/promises'
-import { join, resolve } from 'path'
+import { dirname, join, resolve } from 'path'
 import { po, mo } from 'gettext-parser'
 import { isInputDirectory, isInputFile, isValidInput, logger } from './utils'
 
@@ -18,8 +18,7 @@ async function getPoEntries(entry: string, recursive: boolean) {
 
   const dirents = await readdir(entry, { withFileTypes: true })
   for (const dirent of dirents) {
-    const direntPath = join(entry, dirent.name)
-
+    const direntPath = join(dirent.path, dirent.name)
     if (dirent.isDirectory()) {
       if (!recursive) continue
       poEntries.push(...(await getPoEntries(direntPath, recursive)))
@@ -33,7 +32,13 @@ async function getPoEntries(entry: string, recursive: boolean) {
   return poEntries
 }
 
-function getConvertJobs(cwd: string, input: string, output?: string) {
+function getConvertJobs(
+  cwd: string,
+  input: string,
+  output?: string,
+  recursive?: boolean,
+  inputParam?: string
+) {
   const resolvedInput = resolve(cwd, input)
   if (output) {
     if (output.endsWith('.mo')) {
@@ -43,8 +48,19 @@ function getConvertJobs(cwd: string, input: string, output?: string) {
     const poFilename = input.split('/').pop()!
     const moFilename = poFilename.replace('.po', '.mo')
 
-    const resolvedOutput = resolve(cwd, output, moFilename)
-    existsSync(output) || mkdir(output, { recursive: true })
+    const resolvedOutput =
+      recursive && inputParam
+        ? join(
+            output,
+            input.replace(resolve(cwd, inputParam), '').replace(poFilename, ''),
+            moFilename
+          )
+        : resolve(cwd, output, moFilename)
+
+    const resolvedOutputDir = dirname(resolvedOutput)
+    existsSync(resolvedOutputDir) ||
+      mkdir(resolvedOutputDir, { recursive: true })
+
     return convertPoToMo(resolvedInput, resolvedOutput)
   }
 
@@ -58,6 +74,7 @@ async function getConvertPromises({
   recursive,
 }: CliArgs): Promise<Promise<void>[]> {
   const cwd = cwdParam ?? process.cwd()
+  const inputParam = input
   input &&= resolve(cwd, input)
   output &&= resolve(cwd, output)
 
@@ -99,7 +116,7 @@ async function getConvertPromises({
     }
 
     const convertJobs: Promise<void>[] = poEntries.map((poEntry) =>
-      getConvertJobs(cwd, poEntry, output)
+      getConvertJobs(cwd, poEntry, output, recursive, inputParam)
     )
     return convertJobs
   }
