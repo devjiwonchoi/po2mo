@@ -10,7 +10,7 @@ export async function runTest({
 }: {
   args: string[]
   fixturesDir?: string
-  moPath?: string
+  moPath?: string | string[]
 }) {
   if (fixturesDir) {
     args.push('--cwd', fixturesDir)
@@ -31,9 +31,17 @@ export async function runTest({
   if (stdout) console.log(stdout)
   if (stderr) console.error(stderr)
 
+  // TODO: Refactor
   if (moPath) {
-    expect(existsSync(moPath)).toBe(true)
-    await unlink(moPath)
+    if (Array.isArray(moPath)) {
+      for (const path of moPath) {
+        expect(existsSync(path)).toBe(true)
+        await unlink(path)
+      }
+    } else {
+      expect(existsSync(moPath)).toBe(true)
+      await unlink(moPath)
+    }
   }
 
   return { stderr, stdout, code }
