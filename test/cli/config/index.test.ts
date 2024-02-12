@@ -107,7 +107,6 @@ describe('config', () => {
       ],
       fixturesDir,
       moPath: [
-        // TODO: Maybe when running getPoEntries recursive, need to preserve the folder structure.
         join(fixturesDir, 'output', 'recursive', 'recursive.mo'),
         join(fixturesDir, 'output', 'input.mo'),
       ],
