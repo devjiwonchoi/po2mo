@@ -10,7 +10,9 @@
   </a>
 </p>
 
-> We recommend to use with `npx`.
+**This project is rapidly developed for stable version 2. Please be aware of the breaking changes.**
+
+> Please checkout the [v2 backlog](https://github.com/devjiwonchoi/po2mo/issues/37)
 
 ```sh
 npx po2mo [options]
