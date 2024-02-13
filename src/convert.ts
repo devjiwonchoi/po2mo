@@ -81,10 +81,6 @@ async function getConvertPromises({
   output &&= resolve(cwd, output)
 
   if (!input) {
-    logger.info(
-      `No input was provided. Converting .po files based on git status.`
-    )
-
     // TODO: Find a way to test this
     const { modified, not_added, staged } = await git(cwd).status()
     // TODO: Understand Set better
@@ -97,8 +93,9 @@ async function getConvertPromises({
     ]
 
     if (!poFilesFromGit.length) {
-      logger.warn('No .po files found in git status.')
-      return []
+      throw new Error(
+        'Could not find any modified, staged, or added .po files.'
+      )
     }
 
     return poFilesFromGit.map((poFile) => getConvertJobs(cwd, poFile))
