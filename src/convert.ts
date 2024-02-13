@@ -93,9 +93,10 @@ async function getConvertPromises({
     ]
 
     if (!poFilesFromGit.length) {
-      throw new Error(
-        'Could not find any modified, staged, or added .po files.'
+      logger.error(
+        `Could not find any modified, staged, or added .po files from git on ${cwd}.`
       )
+      return []
     }
 
     return poFilesFromGit.map((poFile) => getConvertJobs(cwd, poFile))
@@ -159,7 +160,9 @@ export async function po2mo({ input, config, cwd, ...args }: CliArgs) {
 
   if (!convertPromises.length) {
     logger.warn(
-      `No ${config ? 'config' : '.po file'} found in path: ${config ?? input}`
+      `No ${config ? 'config' : '.po file'} found in path: ${
+        config ?? input ?? cwd ?? process.cwd()
+      }`
     )
     return
   }
