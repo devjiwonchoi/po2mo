@@ -14,6 +14,8 @@
 
 > Please checkout the [v2 backlog](https://github.com/devjiwonchoi/po2mo/issues/37)
 
+---
+
 ```sh
 npx po2mo [options]
 ```
@@ -27,6 +29,10 @@ Options:
   --config <path>        specify config file path
   --cwd <cwd>            specify current working directory
 ```
+
+## Default Behavior
+
+By default, `po2mo` will convert any modified, staged, or added .po files from git. You can change the current working directory with the [`--cwd` option](#current-working-directory---cwd).
 
 ## Providing an Input
 
@@ -193,13 +199,7 @@ npx po2mo ./locale --output ./output --recursive
 
 Sometimes you need to specify the current working directory. Send it!
 
-## Conventions
-
-### `locale` directory
-
-If no input was provided, `po2mo` looks up for the `locale` directory on the current working directory (`cwd`), and convert all `.po` files recursively within the `locale` directory.
-
-### `po2mo.json`
+## Configuration
 
 We recommend you to be config-free, but most of the time there are edge cases where you need a work-around.
 
