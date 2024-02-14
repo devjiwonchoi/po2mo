@@ -111,7 +111,7 @@ async function getConvertPromises({
 
     if (!poEntriesFromGit.length) {
       const err = new Error(
-        `Could not find any created, modified, or staged .po files from git on ${cwd}.`
+        `No created, modified, or staged .po files found in the local Git repository at ${cwd}.`
       )
       err.name = 'NOT_EXISTED'
       return Promise.reject(err)
