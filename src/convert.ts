@@ -19,15 +19,15 @@ async function convertPoToMo({
   await writeFile(output, moData)
 }
 
-async function getPoEntries({
-  entry,
+async function getPoFiles({
+  input,
   recursive,
 }: {
-  entry: string
+  input: string
   recursive: boolean
 }) {
-  const poEntries: string[] = []
-  const dirents = await readdir(entry, { withFileTypes: true })
+  const poFiles: string[] = []
+  const dirents = await readdir(input, { withFileTypes: true })
 
   for (const dirent of dirents) {
     const direntPath = join(dirent.path, dirent.name)
@@ -35,19 +35,19 @@ async function getPoEntries({
     if (dirent.isDirectory()) {
       if (!recursive) continue
 
-      const recursiveEntries = await getPoEntries({
-        entry: direntPath,
+      const recursiveFiles = await getPoFiles({
+        input: direntPath,
         recursive: true,
       })
-      poEntries.push(...recursiveEntries)
+      poFiles.push(...recursiveFiles)
     }
 
     if (dirent.isFile() && dirent.name.endsWith('.po')) {
-      poEntries.push(direntPath)
+      poFiles.push(direntPath)
     }
   }
 
-  return poEntries
+  return poFiles
 }
 
 function getConvertJobs({
@@ -61,10 +61,9 @@ function getConvertJobs({
   output: string | null
   recursive: boolean
 }) {
-  const resolvedInput = resolve(cwd, input)
   if (output) {
     if (output.endsWith('.mo')) {
-      return convertPoToMo({ input: resolvedInput, output })
+      return convertPoToMo({ input, output })
     }
 
     const poFilename = input.split('/').pop()!
@@ -82,12 +81,12 @@ function getConvertJobs({
       mkdirSync(resolvedOutputDir, { recursive: true })
     }
 
-    return convertPoToMo({ input: resolvedInput, output: resolvedOutput })
+    return convertPoToMo({ input, output: resolvedOutput })
   }
 
   return convertPoToMo({
-    input: resolvedInput,
-    output: resolvedInput.replace('.po', '.mo'),
+    input,
+    output: input.replace('.po', '.mo'),
   })
 }
 
@@ -100,16 +99,16 @@ async function getConvertPromises({
   if (!input) {
     // TODO: Find a way to test this
     const { modified, not_added, staged } = await simpleGit(cwd).status()
-    // TODO: Understand Set better
-    const poEntriesFromGit = [
-      ...new Set(
+
+    const poFilesFromGit = Array.from(
+      new Set(
         modified
           .concat(not_added, staged)
           .filter((file) => file.endsWith('.po'))
-      ),
-    ]
+      )
+    )
 
-    if (!poEntriesFromGit.length) {
+    if (!poFilesFromGit.length) {
       const err = new Error(
         `No created, modified, or staged .po files found in the local Git repository at ${cwd}.`
       )
@@ -117,8 +116,8 @@ async function getConvertPromises({
       return Promise.reject(err)
     }
 
-    return poEntriesFromGit.map((poEntry) =>
-      getConvertJobs({ cwd, input: poEntry, output, recursive })
+    return poFilesFromGit.map((poFile) =>
+      getConvertJobs({ cwd, input: poFile, output, recursive })
     )
   }
 
@@ -132,8 +131,8 @@ async function getConvertPromises({
   }
 
   if (isDirectory) {
-    const poEntries = await getPoEntries({
-      entry: resolve(cwd, input),
+    const poFiles = await getPoFiles({
+      input,
       recursive,
     })
 
@@ -141,8 +140,8 @@ async function getConvertPromises({
       throw new Error('Input is a directory, but the output is a file.')
     }
 
-    const convertJobs: Promise<void>[] = poEntries.map((poEntry) =>
-      getConvertJobs({ cwd, input: poEntry, output, recursive })
+    const convertJobs: Promise<void>[] = poFiles.map((poFile) =>
+      getConvertJobs({ cwd, input: poFile, output, recursive })
     )
     return convertJobs
   }
