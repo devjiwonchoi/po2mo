@@ -14,7 +14,7 @@ function New-TemporaryDirectory {
 
 $platform = $null
 $architecture = $null
-$pnpmName = $null
+$po2moName = $null
 
 # PowerShell versions before 6.* were only for Windows OS
 if ($PSVersionTable.PSVersion.Major -eq 5) {
@@ -52,7 +52,7 @@ if ($PSVersionTable.PSVersion.Major -ge 6) {
       }
     }
 
-    $pnpmName = "pnpm"
+    $po2moName = "po2mo"
   }
 
   if ($PSVersionTable.Platform -eq 'Win32NT') {
@@ -69,7 +69,7 @@ if ($platform -eq 'win') {
     $architecture = 'i686'
   }
 
-  $pnpmName = "pnpm.exe"
+  $po2moName = "po2mo.exe"
 }
 
 if ($null -eq $platform) {
@@ -80,58 +80,40 @@ switch ($architecture) {
   'x64' { ; Break }
   'arm64' { ; Break }
   Default {
-    Write-Error "Sorry! pnpm currently only provides pre-built binaries for x86_64/arm64 architectures."
+    Write-Error "Sorry! po2mo currently only provides pre-built binaries for x86_64/arm64 architectures."
   }
 }
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-# $pkgInfo = Invoke-WebRequest "https://raw.githubusercontent.com/devjiwonchoi/po2mo/main/package.json" -UseBasicParsing
-# $versionJson = $pkgInfo.Content | ConvertFrom-Json
-# $versions = Get-Member -InputObject $versionJson.versions -Type NoteProperty | Select-Object -ExpandProperty Name
-# $distTags = Get-Member -InputObject $versionJson.'dist-tags' -Type NoteProperty | Select-Object -ExpandProperty Name
+$versionJson = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/devjiwonchoi/po2mo/main/package.json"
+$version = $versionJson.version
 
-# $version = $null
-# $preferredVersion = "latest"
+$preferredVersion = $null
 
-# if ($null -ne $env:PNPM_VERSION -and $env:PNPM_VERSION -ne "") {
-#   $preferredVersion = $env:PNPM_VERSION
-# }
+if ($null -ne $env:po2mo_VERSION -and $env:po2mo_VERSION -ne "") {
+  $preferredVersion = $env:po2mo_VERSION
+}
 
-# if ($null -eq $version -and $preferredVersion -in $distTags) {
-#   $version = $versionJson.'dist-tags' | Select-Object -ExpandProperty $preferredVersion
-# }
+if ($null -ne $preferredVersion) {
+  $version = $preferredVersion
+}
 
-# if ($null -eq $version -and $preferredVersion -in $versions) {
-#   $version = $preferredVersion
-# }
+Write-Host "==> " -NoNewline -ForegroundColor Blue
+Write-Host "Downloading po2mo binaries v$version" -ForegroundColor White
 
-# if ($null -eq $version) {
-#   Write-Host "Current tags:" -ForegroundColor Yellow -NoNewline
-#   $versionJson.'dist-tags' | Format-List
-
-#   Write-Host "Versions:" -ForegroundColor Yellow -NoNewline
-#   $versionJson.versions | Get-Member -Type NoteProperty | Format-Wide -Property Name -AutoSize
-
-#   Write-Error "Sorry! pnpm '$preferredVersion' version could not be found. Use one of the tags or published versions from the provided list"
-# }
-
-Write-Host "Downloading pnpm from GitHub...`n" -ForegroundColor Green
-
-$po2mo_home = $HOME + "/.po2mo"
-$tempFile = (Join-Path $po2mo_home $pnpmName)
+$po2moHome = $HOME + "/.po2mo"
+$po2moFile = (Join-Path $po2moHome $po2moName)
 $archiveUrl="https://github.com/devjiwonchoi/po2mo/releases/download/v1.7.0/po2mo-$platform"
 if ($platform -eq 'win') {
   $archiveUrl="$archiveUrl.exe"
 }
-Invoke-WebRequest $archiveUrl -OutFile $tempFile -UseBasicParsing
-
-Write-Host "Running setup...`n" -ForegroundColor Green
+Invoke-WebRequest $archiveUrl -OutFile $po2moFile -UseBasicParsing
 
 if ($platform -ne 'win') {
-  chmod +x $tempFile
+  chmod +x $po2moFile
 }
 
-Start-Process -FilePath $tempFile -ArgumentList "-h" -NoNewWindow -Wait -ErrorAction Continue
+Start-Process -FilePath $po2moFile -ArgumentList "-h" -NoNewWindow -Wait -ErrorAction Continue
 
-Write-Host "Thank you for downloading po2mo!" -ForegroundColor Cyan
+Write-Host "Thank you for downloading po2mo!" -ForegroundColor Blue

@@ -100,7 +100,7 @@ download_and_install() {
   mkdir -p "$po2mo_home" || abort "Mkdir Error!"
   trap 'rm -rf "$po2mo_home"' EXIT INT TERM HUP
 
-  ohai "Downloading po2mo binaries ${version}"
+  ohai "Downloading po2mo binaries v${version}"
   # download the binary to the specified directory
   download "$archive_url" >"$po2mo_home/po2mo" || return 1
   chmod +x "$po2mo_home/po2mo"
