@@ -1,28 +1,45 @@
-import type { CliArgs, Po2MoConfig } from './types'
-
-import { existsSync } from 'fs'
-import { readFile, readdir, writeFile, mkdir } from 'fs/promises'
+import { existsSync, mkdirSync } from 'fs'
+import { readFile, readdir, writeFile } from 'fs/promises'
 import { dirname, join, resolve } from 'path'
 import { po, mo } from 'gettext-parser'
-import git from 'simple-git'
-import { isInputDirectory, isInputFile, isValidInput, logger } from './utils'
+import { simpleGit } from 'simple-git'
+import { validatePath } from './utils'
+import type { CliArgs, Po2MoConfig, ResolvedArgs } from './types'
 
-async function convertPoToMo(input: string, output: string): Promise<void> {
+async function convertPoToMo({
+  input,
+  output,
+}: {
+  input: string
+  output: string
+}): Promise<void> {
   const poFile = await readFile(input, 'utf-8')
   const poData = po.parse(poFile)
   const moData = mo.compile(poData)
   await writeFile(output, moData)
 }
 
-async function getPoEntries(entry: string, recursive: boolean) {
+async function getPoEntries({
+  entry,
+  recursive,
+}: {
+  entry: string
+  recursive: boolean
+}) {
   const poEntries: string[] = []
-
   const dirents = await readdir(entry, { withFileTypes: true })
+
   for (const dirent of dirents) {
     const direntPath = join(dirent.path, dirent.name)
+
     if (dirent.isDirectory()) {
       if (!recursive) continue
-      poEntries.push(...(await getPoEntries(direntPath, recursive)))
+
+      const recursiveEntries = await getPoEntries({
+        entry: direntPath,
+        recursive: true,
+      })
+      poEntries.push(...recursiveEntries)
     }
 
     if (dirent.isFile() && dirent.name.endsWith('.po')) {
@@ -33,58 +50,58 @@ async function getPoEntries(entry: string, recursive: boolean) {
   return poEntries
 }
 
-function getConvertJobs(
-  cwd: string,
-  input: string,
-  output?: string,
-  recursive?: boolean,
-  inputParam?: string
-) {
+function getConvertJobs({
+  cwd,
+  input,
+  output,
+  recursive,
+}: {
+  cwd: string
+  input: string
+  output: string | null
+  recursive: boolean
+}) {
   const resolvedInput = resolve(cwd, input)
   if (output) {
     if (output.endsWith('.mo')) {
-      return convertPoToMo(resolvedInput, resolve(cwd, output))
+      return convertPoToMo({ input: resolvedInput, output })
     }
 
     const poFilename = input.split('/').pop()!
     const moFilename = poFilename.replace('.po', '.mo')
 
-    // TODO: Refactor
-    const resolvedOutput =
-      recursive && inputParam
-        ? join(
-            output,
-            input.replace(resolve(cwd, inputParam), '').replace(poFilename, ''),
-            moFilename
-          )
-        : resolve(cwd, output, moFilename)
+    const resolvedOutput = join(
+      output,
+      // Preserve input directory structure if recursive
+      recursive ? dirname(input.replace(cwd, '')) : '',
+      moFilename
+    )
 
     const resolvedOutputDir = dirname(resolvedOutput)
-    existsSync(resolvedOutputDir) ||
-      mkdir(resolvedOutputDir, { recursive: true })
+    if (!existsSync(resolvedOutputDir)) {
+      mkdirSync(resolvedOutputDir, { recursive: true })
+    }
 
-    return convertPoToMo(resolvedInput, resolvedOutput)
+    return convertPoToMo({ input: resolvedInput, output: resolvedOutput })
   }
 
-  return convertPoToMo(resolvedInput, resolvedInput.replace('.po', '.mo'))
+  return convertPoToMo({
+    input: resolvedInput,
+    output: resolvedInput.replace('.po', '.mo'),
+  })
 }
 
 async function getConvertPromises({
-  cwd: cwdParam,
+  cwd,
   input,
   output,
   recursive,
-}: CliArgs): Promise<Promise<void>[]> {
-  const cwd = cwdParam ?? process.cwd()
-  const inputParam = input
-  input &&= resolve(cwd, input)
-  output &&= resolve(cwd, output)
-
+}: ResolvedArgs): Promise<Promise<void>[]> {
   if (!input) {
     // TODO: Find a way to test this
-    const { modified, not_added, staged } = await git(cwd).status()
+    const { modified, not_added, staged } = await simpleGit(cwd).status()
     // TODO: Understand Set better
-    const poFilesFromGit = [
+    const poEntriesFromGit = [
       ...new Set(
         modified
           .concat(not_added, staged)
@@ -92,36 +109,40 @@ async function getConvertPromises({
       ),
     ]
 
-    if (!poFilesFromGit.length) {
-      logger.error(
-        `Could not find any modified, staged, or added .po files from git on ${cwd}.`
+    if (!poEntriesFromGit.length) {
+      const err = new Error(
+        `No created, modified, or staged .po files found in the local Git repository at ${cwd}.`
       )
-      return []
+      err.name = 'NOT_EXISTED'
+      return Promise.reject(err)
     }
 
-    return poFilesFromGit.map((poFile) => getConvertJobs(cwd, poFile))
+    return poEntriesFromGit.map((poEntry) =>
+      getConvertJobs({ cwd, input: poEntry, output, recursive })
+    )
   }
 
-  if (!isValidInput(input)) {
-    throw new Error(`${input} is not a .po file or directory.`)
-  }
+  const { isDirectory, isFile } = await validatePath(input)
 
-  if (await isInputFile(input)) {
+  if (isFile) {
     if (recursive) {
-      logger.warn('Cannot use --recursive with a file input.')
+      console.warn('Cannot use --recursive with a file input.')
     }
-    return [getConvertJobs(cwd, input, output)]
+    return [getConvertJobs({ cwd, input, output, recursive })]
   }
 
-  if (await isInputDirectory(input)) {
-    const poEntries = await getPoEntries(resolve(cwd, input), recursive)
+  if (isDirectory) {
+    const poEntries = await getPoEntries({
+      entry: resolve(cwd, input),
+      recursive,
+    })
 
     if (output?.endsWith('.mo')) {
       throw new Error('Input is a directory, but the output is a file.')
     }
 
     const convertJobs: Promise<void>[] = poEntries.map((poEntry) =>
-      getConvertJobs(cwd, poEntry, output, recursive, inputParam)
+      getConvertJobs({ cwd, input: poEntry, output, recursive })
     )
     return convertJobs
   }
@@ -129,8 +150,17 @@ async function getConvertPromises({
   return []
 }
 
-export async function po2mo({ input, config, cwd, ...args }: CliArgs) {
-  const convertPromises: Promise<void>[] = []
+function resolveArgs(args: CliArgs): ResolvedArgs {
+  const cwd = args.cwd ? resolve(args.cwd) : process.cwd()
+  const input = args.input ? resolve(cwd, args.input) : null
+  const output = args.output ? resolve(cwd, args.output) : null
+  const recursive = Boolean(args.recursive)
+
+  return { cwd, input, output, recursive }
+}
+
+export async function po2mo({ config, ...args }: CliArgs) {
+  const convertPromises: Promise<Promise<void>[]>[] = []
 
   if (config) {
     const configPath = resolve(
@@ -139,33 +169,27 @@ export async function po2mo({ input, config, cwd, ...args }: CliArgs) {
     )
 
     const { tasks }: Po2MoConfig = await import(configPath)
-    // TODO: Refactor
-    convertPromises.push(
-      ...(
-        await Promise.all(
-          tasks.map((task) =>
-            getConvertPromises({
-              input: task.input,
-              output: task.output,
-              recursive: task.recursive ?? false,
-              cwd,
-            })
-          )
-        )
-      ).flat()
-    )
+
+    const convertPromisesArray = tasks.map((task) => {
+      const resolvedArgs = resolveArgs({
+        cwd: args.cwd,
+        ...task,
+      })
+
+      return getConvertPromises(resolvedArgs)
+    })
+    
+    convertPromises.push(...convertPromisesArray)
   } else {
-    convertPromises.push(...(await getConvertPromises({ input, cwd, ...args })))
+    const resolvedArgs = resolveArgs(args)
+    convertPromises.push(getConvertPromises(resolvedArgs))
   }
 
   if (!convertPromises.length) {
-    logger.warn(
-      `No ${config ? 'config' : '.po file'} found in path: ${
-        config ?? input ?? cwd ?? process.cwd()
-      }`
-    )
-    return
+    const err = new Error('Could not find any tasks.')
+    err.name = 'NOT_EXISTED'
+    return Promise.reject(err)
   }
 
-  Promise.all(convertPromises)
+  return Promise.all(convertPromises)
 }
