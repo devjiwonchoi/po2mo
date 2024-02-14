@@ -30,7 +30,7 @@ npx po2mo@latest
 Usage: po2mo [options]
 
 Options:
-  <input>                specify input path
+  <path>                 specify input path
   -v, --version          output the version number
   -h, --help             output usage information
   -o, --output <path>    specify output path
@@ -51,13 +51,15 @@ See [Providing Output](./docs/providing-output.md) for details.
 
 Sometimes you need to specify the current working directory. Send it!
 
-## Configuration
+## Configuration (`--config`)
 
 We recommend you to be config-free, but most of the time there are edge cases where you need a work-around.
 
-`po2mo` supports configuration for multiple tasks by providing the path to config with the option `--config`.
+`po2mo` supports configuration for multiple tasks by providing the path to config file named `po2mo.json` with the option `--config`.
 
 Each objects inside the `tasks` array are equal to a single conversion task, which takes the three values: `input`, `output`, `recursive`.
+
+### `po2mo.json`
 
 ```json
 {

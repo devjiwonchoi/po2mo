@@ -9,7 +9,7 @@ const helpMessage = `
 Usage: po2mo [options]
 
 Options:
-  <input>                specify input path
+  <path>                 specify input path
   -v, --version          output the version number
   -h, --help             output usage information
   -o, --output <path>    specify output path
@@ -17,7 +17,7 @@ Options:
   --config <path>        specify config file path
   --cwd <cwd>            specify current working directory
 
-* If no input is provided, po2mo converts .po files found in the current working directory's git status (created, modified, staged).
+* If no input is provided, po2mo converts created, modified, or staged .po files found in the local Git repository.
 `
 
 function help() {
