@@ -5,7 +5,7 @@ import { readFile, readdir, writeFile, mkdir } from 'fs/promises'
 import { dirname, join, resolve } from 'path'
 import { po, mo } from 'gettext-parser'
 import git from 'simple-git'
-import { isInputDirectory, isInputFile, isValidInput, logger } from './utils'
+import { isInputDirectory, isInputFile, isValidInput } from './utils'
 
 async function convertPoToMo(input: string, output: string): Promise<void> {
   const poFile = await readFile(input, 'utf-8')
@@ -93,7 +93,7 @@ async function getConvertPromises({
     ]
 
     if (!poFilesFromGit.length) {
-      logger.error(
+      console.error(
         `Could not find any modified, staged, or added .po files from git on ${cwd}.`
       )
       return []
@@ -108,7 +108,7 @@ async function getConvertPromises({
 
   if (await isInputFile(input)) {
     if (recursive) {
-      logger.warn('Cannot use --recursive with a file input.')
+      console.warn('Cannot use --recursive with a file input.')
     }
     return [getConvertJobs(cwd, input, output)]
   }
@@ -159,7 +159,7 @@ export async function po2mo({ input, config, cwd, ...args }: CliArgs) {
   }
 
   if (!convertPromises.length) {
-    logger.warn(
+    console.warn(
       `No ${config ? 'config' : '.po file'} found in path: ${
         config ?? input ?? cwd ?? process.cwd()
       }`
