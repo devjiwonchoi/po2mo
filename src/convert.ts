@@ -128,7 +128,7 @@ async function getConvertPromises({
 }
 
 export async function po2mo({ config, cwd, ...args }: CliArgs) {
-  const convertPromises = []
+  const convertPromises: Promise<Promise<void>[]>[] = []
 
   if (config) {
     const configPath = resolve(
@@ -137,10 +137,10 @@ export async function po2mo({ config, cwd, ...args }: CliArgs) {
     )
 
     const { tasks }: Po2MoConfig = await import(configPath)
-    const taskPromises = tasks.map((task) =>
-      getConvertPromises({ cwd, ...task })
+
+    convertPromises.push(
+      ...tasks.map((task) => getConvertPromises({ cwd, ...task }))
     )
-    convertPromises.push(taskPromises)
   } else {
     convertPromises.push(getConvertPromises({ cwd, ...args }))
   }
@@ -151,5 +151,5 @@ export async function po2mo({ config, cwd, ...args }: CliArgs) {
     return Promise.reject(err)
   }
 
-  return Promise.all(convertPromises.flat())
+  return Promise.all(convertPromises)
 }
