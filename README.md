@@ -14,6 +14,8 @@
 
 > Please checkout the [v2 backlog](https://github.com/devjiwonchoi/po2mo/issues/37)
 
+:kr: [한국어 문서](./docs/korean/README.md)도 지원합니다!
+
 ---
 
 ## Default Behavior
