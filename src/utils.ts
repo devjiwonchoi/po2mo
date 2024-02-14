@@ -1,8 +1,20 @@
 import { stat } from 'fs/promises'
 
 export function exit(err: string | Error) {
-  console.error(err)
+  logger.error(err)
   process.exit(1)
+}
+
+export const logger = {
+  info(message: string) {
+    console.log('\x1b[32m%s\x1b[0m', '✓', message)
+  },
+  warn(message: string) {
+    console.log('\x1b[93m%s\x1b[0m', '⚠', message)
+  },
+  error(message: string | Error) {
+    console.log('\x1b[91m%s\x1b[0m', '𝕏', message)
+  },
 }
 
 export async function validatePath(path: string) {

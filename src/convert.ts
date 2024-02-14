@@ -3,7 +3,7 @@ import { readFile, readdir, writeFile } from 'fs/promises'
 import { dirname, join, resolve } from 'path'
 import { po, mo } from 'gettext-parser'
 import { simpleGit } from 'simple-git'
-import { validatePath } from './utils'
+import { logger, validatePath } from './utils'
 import type { CliArgs, Po2MoConfig, ResolvedArgs } from './types'
 
 async function convertPoToMo({
@@ -125,7 +125,7 @@ async function getConvertPromises({
 
   if (isFile) {
     if (recursive) {
-      console.warn('Cannot use --recursive with a file input.')
+      logger.warn('Cannot use --recursive with a file input.')
     }
     return [getConvertJobs({ cwd, input, output, recursive })]
   }

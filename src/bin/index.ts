@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import arg from 'arg'
 import { po2mo } from '../convert'
-import { exit } from '../utils'
+import { exit, logger } from '../utils'
 import { version } from '../../package.json'
 import type { CliArgs } from '../types'
 
@@ -17,11 +17,11 @@ Options:
   --config <path>        specify config file path
   --cwd <cwd>            specify current working directory
 
-* If no input is provided, po2mo converts created, modified, or staged .po files found in the local Git repository.
+\x1b[93m* If no input is provided, po2mo converts created, modified, or staged .po files found in the local Git repository.\x1b[0m
 `
 
 function help() {
-  console.log(helpMessage)
+  console.log('\x1b[1m%s\x1b[0m', helpMessage)
 }
 
 function parseCliArgs(argv: string[]) {
@@ -75,7 +75,7 @@ async function run(args: CliArgs): Promise<void> {
     throw err
   }
 
-  console.log(`po2mo v${version} converted in ${(end - start) / 1000}s`)
+  logger.info(`po2mo v${version} converted in ${(end - start) / 1000}s`)
 }
 
 async function main() {
