@@ -1,14 +1,16 @@
-import { join, resolve } from 'path'
-import { runTest, tempDir } from '../../test-utils'
+import { resolve } from 'path'
+import { runTest } from '../../test-utils'
 
 const fixturesDir = resolve(__dirname, '../base/fixtures')
+const tempDirTag = 'po2mo-config'
 
 describe('config', () => {
   it('should convert input as file', async () => {
     await runTest({
-      args: ['--config', resolve(__dirname, 'fixtures', 'input-as-file')],
+      args: ['--config', resolve(__dirname, 'fixtures/input-as-file')],
       fixturesDir,
-      moPath: [join(tempDir, 'input.mo')],
+      tempDirTag,
+      moPath: ['input.mo'],
     })
   })
 
@@ -16,10 +18,11 @@ describe('config', () => {
     const { stderr } = await runTest({
       args: [
         '--config',
-        resolve(__dirname, 'fixtures', 'input-as-file', 'recursive'),
+        resolve(__dirname, 'fixtures/input-as-file/recursive'),
       ],
       fixturesDir,
-      moPath: [join(tempDir, 'input.mo')],
+      tempDirTag,
+      moPath: ['input.mo'],
     })
 
     expect(stderr).toMatch(/Cannot use --recursive with a file input./)
@@ -29,10 +32,11 @@ describe('config', () => {
     await runTest({
       args: [
         '--config',
-        resolve(__dirname, 'fixtures', 'input-as-file', 'output-as-file'),
+        resolve(__dirname, 'fixtures/input-as-file/output-as-file'),
       ],
       fixturesDir,
-      moPath: [join(tempDir, 'output.mo')],
+      tempDirTag,
+      moPath: ['output.mo'],
     })
   })
 
@@ -40,32 +44,29 @@ describe('config', () => {
     await runTest({
       args: [
         '--config',
-        resolve(__dirname, 'fixtures', 'input-as-file', 'output-as-dir'),
+        resolve(__dirname, 'fixtures/input-as-file/output-as-dir'),
       ],
       fixturesDir,
-      moPath: [join(tempDir, 'output', 'input.mo')],
+      tempDirTag,
+      moPath: ['output/input.mo'],
     })
   })
 
   it('should convert input as directory', async () => {
     await runTest({
-      args: ['--config', resolve(__dirname, 'fixtures', 'input-as-dir')],
+      args: ['--config', resolve(__dirname, 'fixtures/input-as-dir')],
       fixturesDir,
-      moPath: [join(tempDir, 'input.mo')],
+      tempDirTag,
+      moPath: ['input.mo'],
     })
   })
 
   it('should convert input as directory with recursive', async () => {
     await runTest({
-      args: [
-        '--config',
-        resolve(__dirname, 'fixtures', 'input-as-dir', 'recursive'),
-      ],
+      args: ['--config', resolve(__dirname, 'fixtures/input-as-dir/recursive')],
       fixturesDir,
-      moPath: [
-        join(tempDir, 'recursive', 'recursive.mo'),
-        join(tempDir, 'input.mo'),
-      ],
+      tempDirTag,
+      moPath: ['recursive/recursive.mo', 'input.mo'],
     })
   })
 
@@ -73,9 +74,10 @@ describe('config', () => {
     const { stderr } = await runTest({
       args: [
         '--config',
-        resolve(__dirname, 'fixtures', 'input-as-dir', 'output-as-file'),
+        resolve(__dirname, 'fixtures/input-as-dir/output-as-file'),
       ],
       fixturesDir,
+      tempDirTag,
     })
 
     expect(stderr).toMatch(/Input is a directory, but the output is a file./)
@@ -85,10 +87,11 @@ describe('config', () => {
     await runTest({
       args: [
         '--config',
-        resolve(__dirname, 'fixtures', 'input-as-dir', 'output-as-dir'),
+        resolve(__dirname, 'fixtures/input-as-dir/output-as-dir'),
       ],
       fixturesDir,
-      moPath: [join(tempDir, 'output', 'input.mo')],
+      tempDirTag,
+      moPath: ['output/input.mo'],
     })
   })
 
@@ -96,19 +99,11 @@ describe('config', () => {
     await runTest({
       args: [
         '--config',
-        resolve(
-          __dirname,
-          'fixtures',
-          'input-as-dir',
-          'output-as-dir',
-          'recursive'
-        ),
+        resolve(__dirname, 'fixtures/input-as-dir/output-as-dir/recursive'),
       ],
       fixturesDir,
-      moPath: [
-        join(tempDir, 'output', 'recursive', 'recursive.mo'),
-        join(tempDir, 'output', 'input.mo'),
-      ],
+      tempDirTag,
+      moPath: ['output/recursive/recursive.mo', 'output/input.mo'],
     })
   })
 })

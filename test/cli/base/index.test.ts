@@ -1,14 +1,15 @@
-import { join } from 'path'
-import { runTest, tempDir } from '../../test-utils'
+import { runTest } from '../../test-utils'
 
-const fixturesDir = join(__dirname, 'fixtures')
+const fixturesDir = __dirname + '/fixtures'
+const tempDirTag = 'po2mo-base'
 
 describe('base', () => {
   it('should convert input as file', async () => {
     await runTest({
       args: ['./input.po'],
       fixturesDir,
-      moPath: [join(tempDir, 'input.mo')],
+      tempDirTag,
+      moPath: ['input.mo'],
     })
   })
 
@@ -16,7 +17,8 @@ describe('base', () => {
     const { stderr } = await runTest({
       args: ['./input.po', '-r'],
       fixturesDir,
-      moPath: [join(tempDir, 'input.mo')],
+      tempDirTag,
+      moPath: ['input.mo'],
     })
 
     expect(stderr).toMatch(/Cannot use --recursive with a file input./)
@@ -26,7 +28,8 @@ describe('base', () => {
     await runTest({
       args: ['./input.po', '-o', './output.mo'],
       fixturesDir,
-      moPath: [join(tempDir, 'output.mo')],
+      tempDirTag,
+      moPath: ['output.mo'],
     })
   })
 
@@ -34,7 +37,8 @@ describe('base', () => {
     await runTest({
       args: ['./input.po', '-o', './output'],
       fixturesDir,
-      moPath: [join(tempDir, 'output', 'input.mo')],
+      tempDirTag,
+      moPath: ['output/input.mo'],
     })
   })
 
@@ -42,7 +46,8 @@ describe('base', () => {
     await runTest({
       args: ['.'],
       fixturesDir,
-      moPath: [join(tempDir, 'input.mo')],
+      tempDirTag,
+      moPath: ['input.mo'],
     })
   })
 
@@ -50,10 +55,8 @@ describe('base', () => {
     await runTest({
       args: ['.', '-r'],
       fixturesDir,
-      moPath: [
-        join(tempDir, 'recursive', 'recursive.mo'),
-        join(tempDir, 'input.mo'),
-      ],
+      tempDirTag,
+      moPath: ['recursive/recursive.mo', 'input.mo'],
     })
   })
 
@@ -61,6 +64,7 @@ describe('base', () => {
     const { stderr } = await runTest({
       args: ['.', '-o', './output.mo'],
       fixturesDir,
+      tempDirTag,
     })
 
     expect(stderr).toMatch(/Input is a directory, but the output is a file./)
@@ -70,7 +74,8 @@ describe('base', () => {
     await runTest({
       args: ['.', '-o', './output'],
       fixturesDir,
-      moPath: [join(tempDir, 'output', 'input.mo')],
+      tempDirTag,
+      moPath: ['output/input.mo'],
     })
   })
 
@@ -78,10 +83,8 @@ describe('base', () => {
     await runTest({
       args: ['.', '-o', './output', '-r'],
       fixturesDir,
-      moPath: [
-        join(tempDir, 'output', 'recursive', 'recursive.mo'),
-        join(tempDir, 'output', 'input.mo'),
-      ],
+      tempDirTag,
+      moPath: ['output/recursive/recursive.mo', 'output/input.mo'],
     })
   })
 })

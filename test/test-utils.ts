@@ -4,18 +4,21 @@ import { mkdir, rm, unlink } from 'fs/promises'
 import { tmpdir } from 'os'
 import { resolve, join } from 'path'
 
-export const tempDir = join(tmpdir(), `${Math.random()}`, 'po2mo')
-
 export async function runTest({
   args,
   moPath,
   fixturesDir,
+  tempDirTag,
 }: {
   args: string[]
+  tempDirTag?: string
   fixturesDir?: string
   moPath?: string | string[]
 }) {
-  if (fixturesDir) {
+  let tempDir = ''
+
+  if (fixturesDir && tempDirTag) {
+    tempDir = join(tmpdir(), tempDirTag)
     args.push('--cwd', tempDir)
 
     await mkdir(tempDir, { recursive: true })
@@ -39,11 +42,15 @@ export async function runTest({
 
   if (moPath) {
     for (const path of moPath) {
-      expect(existsSync(path)).toBe(true)
-      await unlink(path)
+      const resolvedPath = join(tempDir, path)
+      expect(existsSync(resolvedPath)).toBe(true)
+      await unlink(resolvedPath)
     }
   }
 
-  await rm(tempDir, { recursive: true, force: true })
+  if (tempDir.length) {
+    await rm(tempDir, { recursive: true, force: true })
+  }
+
   return { stderr, stdout, code }
 }
