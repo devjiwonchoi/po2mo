@@ -3,7 +3,7 @@ import { readFile, readdir, writeFile } from 'fs/promises'
 import { dirname, join, resolve } from 'path'
 import { po, mo } from 'gettext-parser'
 import { simpleGit } from 'simple-git'
-import { validatePath } from './utils'
+import { logger, validatePath } from './utils'
 import type { CliArgs, Po2MoConfig, ResolvedArgs } from './types'
 
 async function convertPoToMo({
@@ -112,7 +112,7 @@ async function getConvertPromises({
       const err = new Error(
         `No created, modified, or staged .po files found in the local Git repository at ${cwd}.`
       )
-      err.name = 'NOT_EXISTED'
+      err.name = 'MISSING_PO'
       return Promise.reject(err)
     }
 
@@ -125,7 +125,7 @@ async function getConvertPromises({
 
   if (isFile) {
     if (recursive) {
-      console.warn('Cannot use --recursive with a file input.')
+      logger.warn('Cannot use --recursive with a file input.')
     }
     return [getConvertJobs({ cwd, input, output, recursive })]
   }
@@ -177,7 +177,7 @@ export async function po2mo({ config, ...args }: CliArgs) {
 
       return getConvertPromises(resolvedArgs)
     })
-    
+
     convertPromises.push(...convertPromisesArray)
   } else {
     const resolvedArgs = resolveArgs(args)
@@ -186,7 +186,7 @@ export async function po2mo({ config, ...args }: CliArgs) {
 
   if (!convertPromises.length) {
     const err = new Error('Could not find any tasks.')
-    err.name = 'NOT_EXISTED'
+    err.name = 'MISSING_PO'
     return Promise.reject(err)
   }
 
