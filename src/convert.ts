@@ -6,22 +6,40 @@ import { simpleGit } from 'simple-git'
 import { validatePath } from './utils'
 import type { CliArgs, Po2MoConfig, ResolvedArgs } from './types'
 
-async function convertPoToMo(input: string, output: string): Promise<void> {
+async function convertPoToMo({
+  input,
+  output,
+}: {
+  input: string
+  output: string
+}): Promise<void> {
   const poFile = await readFile(input, 'utf-8')
   const poData = po.parse(poFile)
   const moData = mo.compile(poData)
   await writeFile(output, moData)
 }
 
-async function getPoEntries(entry: string, recursive?: boolean) {
+async function getPoEntries({
+  entry,
+  recursive,
+}: {
+  entry: string
+  recursive: boolean
+}) {
   const poEntries: string[] = []
-
   const dirents = await readdir(entry, { withFileTypes: true })
+
   for (const dirent of dirents) {
     const direntPath = join(dirent.path, dirent.name)
+
     if (dirent.isDirectory()) {
       if (!recursive) continue
-      poEntries.push(...(await getPoEntries(direntPath, recursive)))
+
+      const recursiveEntries = await getPoEntries({
+        entry: direntPath,
+        recursive: true,
+      })
+      poEntries.push(...recursiveEntries)
     }
 
     if (dirent.isFile() && dirent.name.endsWith('.po')) {
@@ -46,7 +64,7 @@ function getConvertJobs({
   const resolvedInput = resolve(cwd, input)
   if (output) {
     if (output.endsWith('.mo')) {
-      return convertPoToMo(resolvedInput, output)
+      return convertPoToMo({ input: resolvedInput, output })
     }
 
     const poFilename = input.split('/').pop()!
@@ -64,10 +82,13 @@ function getConvertJobs({
       mkdirSync(resolvedOutputDir, { recursive: true })
     }
 
-    return convertPoToMo(resolvedInput, resolvedOutput)
+    return convertPoToMo({ input: resolvedInput, output: resolvedOutput })
   }
 
-  return convertPoToMo(resolvedInput, resolvedInput.replace('.po', '.mo'))
+  return convertPoToMo({
+    input: resolvedInput,
+    output: resolvedInput.replace('.po', '.mo'),
+  })
 }
 
 async function getConvertPromises({
@@ -111,7 +132,10 @@ async function getConvertPromises({
   }
 
   if (isDirectory) {
-    const poEntries = await getPoEntries(resolve(cwd, input), recursive)
+    const poEntries = await getPoEntries({
+      entry: resolve(cwd, input),
+      recursive,
+    })
 
     if (output?.endsWith('.mo')) {
       throw new Error('Input is a directory, but the output is a file.')
