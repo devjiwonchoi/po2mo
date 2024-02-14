@@ -1,25 +1,27 @@
 #!/usr/bin/env node
-import type { CliArgs } from '../types'
-
 import arg from 'arg'
 import { po2mo } from '../convert'
-import { exit, logger, paint } from '../utils'
+import { exit } from '../utils'
 import { version } from '../../package.json'
+import type { CliArgs } from '../types'
 
 const helpMessage = `
 Usage: po2mo [options]
 
 Options:
+  <input>                specify input path
   -v, --version          output the version number
   -h, --help             output usage information
   -o, --output <path>    specify output path
   -r, --recursive        convert po files recursively
   --config <path>        specify config file path
   --cwd <cwd>            specify current working directory
+
+* If no input is provided, po2mo converts .po files found in the current working directory's git status (created, modified, staged).
 `
 
 function help() {
-  logger.log(helpMessage)
+  console.log(helpMessage)
 }
 
 function parseCliArgs(argv: string[]) {
@@ -57,17 +59,17 @@ function parseCliArgs(argv: string[]) {
   return parsedArgs
 }
 
-async function run(args: CliArgs): Promise<void> {
-  if (args.version) {
-    logger.log(version)
-    return
-  }
-  if (args.help) {
-    help()
-    return
-  }
+async function run({
+  config,
+  cwd,
+  input,
+  output,
+  recursive,
+  ...args
+}: CliArgs): Promise<void> {
+  if (args.help) return help()
+  if (args.version) return console.log(version)
 
-  const { config, cwd, input, output, recursive } = args
   let start = Date.now()
   let end: number
   try {
@@ -78,32 +80,24 @@ async function run(args: CliArgs): Promise<void> {
       output,
       recursive,
     })
+
     end = Date.now()
   } catch (err: any) {
     if (err.name === 'NOT_EXISTED') {
-      help()
-      exit(err)
-      return
+      return help(), exit(err)
     }
     throw err
   }
 
-  logger.log()
-  paint('✓', 'green', `po2mo ${version} converted in ${(end - start) / 1000}s`)
+  console.log(`po2mo v${version} converted in ${(end - start) / 1000}s`)
 }
 
 async function main() {
-  let params, error
   try {
-    params = parseCliArgs(process.argv.slice(2))
+    await run(parseCliArgs(process.argv.slice(2)))
   } catch (err) {
-    error = err
+    return exit(err as Error)
   }
-  if (error || !params) {
-    if (!error) help()
-    return exit(error as Error)
-  }
-  await run(params)
 }
 
 main().catch(exit)
