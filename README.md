@@ -16,10 +16,14 @@
 
 ---
 
-```sh
-npx po2mo
+## Default Behavior
 
-npm i -g po2mo
+By default, `po2mo` **will convert any created, modified, or staged .po files found in the local Git repository**.
+
+You can change the current working directory with the [`--cwd`](#current-working-directory---cwd) option.
+
+```sh
+npx po2mo@latest
 ```
 
 ```sh
@@ -34,10 +38,6 @@ Options:
   --config <path>        specify config file path
   --cwd <cwd>            specify current working directory
 ```
-
-## Default Behavior
-
-By default, `po2mo` will convert any created, modified, or staged .po files found in the local Git repository. You can change the current working directory with the [`--cwd`](#current-working-directory---cwd) option.
 
 ## Providing Input (`<path>`)
 
