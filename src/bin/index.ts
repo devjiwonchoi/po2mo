@@ -59,28 +59,14 @@ function parseCliArgs(argv: string[]) {
   return parsedArgs
 }
 
-async function run({
-  config,
-  cwd,
-  input,
-  output,
-  recursive,
-  ...args
-}: CliArgs): Promise<void> {
+async function run(args: CliArgs): Promise<void> {
   if (args.help) return help()
   if (args.version) return console.log(version)
 
   let start = Date.now()
   let end: number
   try {
-    await po2mo({
-      config,
-      cwd,
-      input,
-      output,
-      recursive,
-    })
-
+    await po2mo(args)
     end = Date.now()
   } catch (err: any) {
     if (err.name === 'NOT_EXISTED') {
