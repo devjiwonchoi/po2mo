@@ -37,16 +37,10 @@ export async function runTest({
   if (stdout) console.log(stdout)
   if (stderr) console.error(stderr)
 
-  // TODO: Refactor
   if (moPath) {
-    if (Array.isArray(moPath)) {
-      for (const path of moPath) {
-        expect(existsSync(path)).toBe(true)
-        await unlink(path)
-      }
-    } else {
-      expect(existsSync(moPath)).toBe(true)
-      await unlink(moPath)
+    for (const path of moPath) {
+      expect(existsSync(path)).toBe(true)
+      await unlink(path)
     }
   }
 

@@ -8,7 +8,7 @@ describe('config', () => {
     await runTest({
       args: ['--config', resolve(__dirname, 'fixtures', 'input-as-file')],
       fixturesDir,
-      moPath: join(tempDir, 'input.mo'),
+      moPath: [join(tempDir, 'input.mo')],
     })
   })
 
@@ -19,7 +19,7 @@ describe('config', () => {
         resolve(__dirname, 'fixtures', 'input-as-file', 'recursive'),
       ],
       fixturesDir,
-      moPath: join(tempDir, 'input.mo'),
+      moPath: [join(tempDir, 'input.mo')],
     })
 
     expect(stderr).toMatch(/Cannot use --recursive with a file input./)
@@ -32,7 +32,7 @@ describe('config', () => {
         resolve(__dirname, 'fixtures', 'input-as-file', 'output-as-file'),
       ],
       fixturesDir,
-      moPath: join(tempDir, 'output.mo'),
+      moPath: [join(tempDir, 'output.mo')],
     })
   })
 
@@ -43,7 +43,7 @@ describe('config', () => {
         resolve(__dirname, 'fixtures', 'input-as-file', 'output-as-dir'),
       ],
       fixturesDir,
-      moPath: join(tempDir, 'output', 'input.mo'),
+      moPath: [join(tempDir, 'output', 'input.mo')],
     })
   })
 
@@ -51,7 +51,7 @@ describe('config', () => {
     await runTest({
       args: ['--config', resolve(__dirname, 'fixtures', 'input-as-dir')],
       fixturesDir,
-      moPath: join(tempDir, 'input.mo'),
+      moPath: [join(tempDir, 'input.mo')],
     })
   })
 
@@ -62,7 +62,6 @@ describe('config', () => {
         resolve(__dirname, 'fixtures', 'input-as-dir', 'recursive'),
       ],
       fixturesDir,
-      // TODO: Refactor
       moPath: [
         join(tempDir, 'recursive', 'recursive.mo'),
         join(tempDir, 'input.mo'),
@@ -89,7 +88,7 @@ describe('config', () => {
         resolve(__dirname, 'fixtures', 'input-as-dir', 'output-as-dir'),
       ],
       fixturesDir,
-      moPath: join(tempDir, 'output', 'input.mo'),
+      moPath: [join(tempDir, 'output', 'input.mo')],
     })
   })
 

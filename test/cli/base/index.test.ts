@@ -8,7 +8,7 @@ describe('base', () => {
     await runTest({
       args: ['./input.po'],
       fixturesDir,
-      moPath: join(tempDir, 'input.mo'),
+      moPath: [join(tempDir, 'input.mo')],
     })
   })
 
@@ -16,7 +16,7 @@ describe('base', () => {
     const { stderr } = await runTest({
       args: ['./input.po', '-r'],
       fixturesDir,
-      moPath: join(tempDir, 'input.mo'),
+      moPath: [join(tempDir, 'input.mo')],
     })
 
     expect(stderr).toMatch(/Cannot use --recursive with a file input./)
@@ -26,7 +26,7 @@ describe('base', () => {
     await runTest({
       args: ['./input.po', '-o', './output.mo'],
       fixturesDir,
-      moPath: join(tempDir, 'output.mo'),
+      moPath: [join(tempDir, 'output.mo')],
     })
   })
 
@@ -34,7 +34,7 @@ describe('base', () => {
     await runTest({
       args: ['./input.po', '-o', './output'],
       fixturesDir,
-      moPath: join(tempDir, 'output', 'input.mo'),
+      moPath: [join(tempDir, 'output', 'input.mo')],
     })
   })
 
@@ -42,7 +42,7 @@ describe('base', () => {
     await runTest({
       args: ['.'],
       fixturesDir,
-      moPath: join(tempDir, 'input.mo'),
+      moPath: [join(tempDir, 'input.mo')],
     })
   })
 
@@ -70,7 +70,7 @@ describe('base', () => {
     await runTest({
       args: ['.', '-o', './output'],
       fixturesDir,
-      moPath: join(tempDir, 'output', 'input.mo'),
+      moPath: [join(tempDir, 'output', 'input.mo')],
     })
   })
 
