@@ -127,8 +127,8 @@ async function getConvertPromises({
   return []
 }
 
-export async function po2mo({ input, config, cwd, ...args }: CliArgs) {
-  const convertPromises: Promise<void>[] = []
+export async function po2mo({ config, cwd, ...args }: CliArgs) {
+  const convertPromises = []
 
   if (config) {
     const configPath = resolve(
@@ -137,34 +137,19 @@ export async function po2mo({ input, config, cwd, ...args }: CliArgs) {
     )
 
     const { tasks }: Po2MoConfig = await import(configPath)
-    // TODO: Refactor
-    convertPromises.push(
-      ...(
-        await Promise.all(
-          tasks.map((task) =>
-            getConvertPromises({
-              input: task.input,
-              output: task.output,
-              recursive: task.recursive ?? false,
-              cwd,
-            })
-          )
-        )
-      ).flat()
+    const taskPromises = tasks.map((task) =>
+      getConvertPromises({ cwd, recursive: task.recursive ?? false, ...task })
     )
+    convertPromises.push(taskPromises)
   } else {
-    convertPromises.push(...(await getConvertPromises({ input, cwd, ...args })))
+    convertPromises.push(getConvertPromises({ cwd, ...args }))
   }
 
   if (!convertPromises.length) {
-    const err = new Error(
-      `No ${config ? 'config' : '.po file'} found in path: ${
-        config ?? input ?? cwd ?? process.cwd()
-      }`
-    )
+    const err = new Error('Could not find any tasks.')
     err.name = 'NOT_EXISTED'
     return Promise.reject(err)
   }
 
-  return Promise.all(convertPromises)
+  return Promise.all(convertPromises.flat())
 }
