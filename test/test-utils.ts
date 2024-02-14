@@ -1,19 +1,25 @@
-import { spawn } from 'child_process'
+import { exec, spawn } from 'child_process'
 import { existsSync } from 'fs'
-import { unlink } from 'fs/promises'
-import { resolve } from 'path'
+import { mkdir, rm, unlink } from 'fs/promises'
+import { tmpdir } from 'os'
+import { resolve, join } from 'path'
+
+export const tempDir = join(tmpdir(), `${Math.random()}`, 'po2mo')
 
 export async function runTest({
   args,
-  tempDir,
   moPath,
+  fixturesDir,
 }: {
   args: string[]
-  tempDir?: string
+  fixturesDir?: string
   moPath?: string | string[]
 }) {
-  if (tempDir) {
+  if (fixturesDir) {
     args.push('--cwd', tempDir)
+
+    await mkdir(tempDir, { recursive: true })
+    await exec(`cp -r ${fixturesDir}/* ${tempDir}`)
   }
 
   const cp = spawn(
@@ -44,5 +50,6 @@ export async function runTest({
     }
   }
 
+  await rm(tempDir, { recursive: true, force: true })
   return { stderr, stdout, code }
 }
