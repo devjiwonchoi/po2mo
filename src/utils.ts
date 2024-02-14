@@ -11,8 +11,8 @@ export async function validatePath(path: string) {
     return { isDirectory: stats.isDirectory(), isFile: stats.isFile() }
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-      const err = new Error(`${path} is not a .po file or directory.`)
-      err.name = 'NOT_EXISTED'
+      const err = new Error(`no such file or directory, ${path}`)
+      err.name = 'MISSING_PO'
       return Promise.reject(err)
     } else {
       throw error

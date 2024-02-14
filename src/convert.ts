@@ -112,7 +112,7 @@ async function getConvertPromises({
       const err = new Error(
         `No created, modified, or staged .po files found in the local Git repository at ${cwd}.`
       )
-      err.name = 'NOT_EXISTED'
+      err.name = 'MISSING_PO'
       return Promise.reject(err)
     }
 
@@ -177,7 +177,7 @@ export async function po2mo({ config, ...args }: CliArgs) {
 
       return getConvertPromises(resolvedArgs)
     })
-    
+
     convertPromises.push(...convertPromisesArray)
   } else {
     const resolvedArgs = resolveArgs(args)
@@ -186,7 +186,7 @@ export async function po2mo({ config, ...args }: CliArgs) {
 
   if (!convertPromises.length) {
     const err = new Error('Could not find any tasks.')
-    err.name = 'NOT_EXISTED'
+    err.name = 'MISSING_PO'
     return Promise.reject(err)
   }
 

@@ -69,7 +69,7 @@ async function run(args: CliArgs): Promise<void> {
     await po2mo(args)
     end = Date.now()
   } catch (err: any) {
-    if (err.name === 'NOT_EXISTED') {
+    if (err.name === 'MISSING_PO') {
       return help(), exit(err)
     }
     throw err
