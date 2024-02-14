@@ -15,3 +15,10 @@ export type CliArgs = {
   version?: boolean
   recursive?: boolean
 }
+
+export type ResolvedArgs = {
+  input: string | null
+  output: string | null
+  cwd: string
+  recursive: boolean
+}
