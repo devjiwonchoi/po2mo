@@ -10,10 +10,10 @@ export const logger = {
     console.log('\x1b[32m%s\x1b[0m', '✓', message)
   },
   warn(message: string) {
-    console.log('\x1b[93m%s\x1b[0m', '⚠', message)
+    console.warn('\x1b[93m%s\x1b[0m', '⚠', message)
   },
   error(message: string | Error) {
-    console.log('\x1b[91m%s\x1b[0m', '𝕏', message)
+    console.error('\x1b[91m%s\x1b[0m', '𝕏', message)
   },
 }
 
