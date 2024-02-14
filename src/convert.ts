@@ -146,25 +146,19 @@ export async function po2mo({ config, ...args }: CliArgs) {
 
     const { tasks }: Po2MoConfig = await import(configPath)
 
-    convertPromises.push(
-      ...tasks.map((task) => {
-        const { cwd, input, output, recursive } = resolveArgs({
-          cwd: args.cwd,
-          ...task,
-        })
-        return getConvertPromises({ cwd, input, output, recursive })
+    const convertPromisesArray = tasks.map((task) => {
+      const resolvedArgs = resolveArgs({
+        cwd: args.cwd,
+        ...task,
       })
-    )
+
+      return getConvertPromises(resolvedArgs)
+    })
+    
+    convertPromises.push(...convertPromisesArray)
   } else {
-    const { cwd, input, output, recursive } = resolveArgs(args)
-    convertPromises.push(
-      getConvertPromises({
-        cwd,
-        input,
-        output,
-        recursive,
-      })
-    )
+    const resolvedArgs = resolveArgs(args)
+    convertPromises.push(getConvertPromises(resolvedArgs))
   }
 
   if (!convertPromises.length) {
