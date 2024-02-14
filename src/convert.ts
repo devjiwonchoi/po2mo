@@ -1,11 +1,10 @@
-import type { CliArgs, Po2MoConfig } from './types'
-
 import { existsSync } from 'fs'
 import { readFile, readdir, writeFile, mkdir } from 'fs/promises'
 import { dirname, join, resolve } from 'path'
 import { po, mo } from 'gettext-parser'
-import git from 'simple-git'
-import { isInputDirectory, isInputFile, isValidInput } from './utils'
+import { simpleGit } from 'simple-git'
+import { validatePath } from './utils'
+import type { CliArgs, Po2MoConfig } from './types'
 
 async function convertPoToMo(input: string, output: string): Promise<void> {
   const poFile = await readFile(input, 'utf-8')
@@ -82,7 +81,7 @@ async function getConvertPromises({
 
   if (!input) {
     // TODO: Find a way to test this
-    const { modified, not_added, staged } = await git(cwd).status()
+    const { modified, not_added, staged } = await simpleGit(cwd).status()
     // TODO: Understand Set better
     const poFilesFromGit = [
       ...new Set(
@@ -103,18 +102,16 @@ async function getConvertPromises({
     return poFilesFromGit.map((poFile) => getConvertJobs(cwd, poFile))
   }
 
-  if (!isValidInput(input)) {
-    throw new Error(`${input} is not a .po file or directory.`)
-  }
+  const { isDirectory, isFile } = await validatePath(input)
 
-  if (await isInputFile(input)) {
+  if (isFile) {
     if (recursive) {
       console.warn('Cannot use --recursive with a file input.')
     }
     return [getConvertJobs(cwd, input, output)]
   }
 
-  if (await isInputDirectory(input)) {
+  if (isDirectory) {
     const poEntries = await getPoEntries(resolve(cwd, input), recursive)
 
     if (output?.endsWith('.mo')) {
