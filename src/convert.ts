@@ -13,7 +13,7 @@ async function convertPoToMo(input: string, output: string): Promise<void> {
   await writeFile(output, moData)
 }
 
-async function getPoEntries(entry: string, recursive: boolean) {
+async function getPoEntries(entry: string, recursive?: boolean) {
   const poEntries: string[] = []
 
   const dirents = await readdir(entry, { withFileTypes: true })
@@ -138,7 +138,7 @@ export async function po2mo({ config, cwd, ...args }: CliArgs) {
 
     const { tasks }: Po2MoConfig = await import(configPath)
     const taskPromises = tasks.map((task) =>
-      getConvertPromises({ cwd, recursive: task.recursive ?? false, ...task })
+      getConvertPromises({ cwd, ...task })
     )
     convertPromises.push(taskPromises)
   } else {

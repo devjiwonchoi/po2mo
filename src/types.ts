@@ -13,5 +13,5 @@ export type CliArgs = {
   cwd?: string
   help?: boolean
   version?: boolean
-  recursive: boolean
+  recursive?: boolean
 }
