@@ -17,11 +17,16 @@
 ---
 
 ```sh
-npx po2mo [options]
+npx po2mo
+
+npm i -g po2mo
 ```
 
 ```sh
+Usage: po2mo [options]
+
 Options:
+  <input>                specify input path
   -v, --version          output the version number
   -h, --help             output usage information
   -o, --output <path>    specify output path
@@ -32,168 +37,15 @@ Options:
 
 ## Default Behavior
 
-By default, `po2mo` will convert any modified, staged, or added .po files from git. You can change the current working directory with the [`--cwd` option](#current-working-directory---cwd).
+By default, `po2mo` will convert any created, modified, or staged .po files found in the local Git repository. You can change the current working directory with the [`--cwd`](#current-working-directory---cwd) option.
 
-## Providing an Input
+## Providing Input (`<path>`)
 
-Let's say we have a folder tree like this:
+See [Providing Input](./docs/providing-input.md) for details.
 
-```sh
-.
-└── locale/
-    ├── a.po
-    ├── b.po
-    └── c.po
-```
+## Providing Output (`--output`)
 
-By providing the input `a.po` file:
-
-```sh
-npx po2mo ./locale/a.po
-```
-
-This will create an `a.mo` file on the same level of the `a.po` file we targeted.
-
-```sh
-.
-└── locale/
-    ├── a.po
-    ├── a.mo <-- new!
-    ├── b.po
-    └── c.po
-```
-
-If we provided the input as the `locale` directory itself:
-
-```sh
-npx po2mo ./locale
-```
-
-```sh
-.
-└── locale/
-    ├── a.po
-    ├── a.mo <-- new!
-    ├── b.po
-    ├── b.mo <-- new!
-    ├── c.po
-    └── c.mo <-- new!
-```
-
-What if we had a nested directory inside the `locale` like:
-
-```sh
-.
-└── locale/
-    ├── nested/
-    │   ├── aa.po
-    │   ├── bb.po
-    │   └── cc.po
-    ├── a.po
-    ├── b.po
-    └── c.po
-```
-
-We can also target them as well by providing the `--recursive` (or `-r` alias) option.
-
-```sh
-npx po2mo ./locale --recursive
-```
-
-> Won't provide a folder tree.. You know how it goes ;)
-
-## Providing an Output
-
-> :bulb: Tip: input as directory, output as file won't work! :x:
-
-Again, let's bring back the folder tree from the above:
-
-```sh
-.
-└── locale/
-    ├── a.po
-    ├── b.po
-    └── c.po
-```
-
-We can specify the output path with the `--output` (or `-o` alias) option.
-
-By providing the output to a filename `a-converted.mo`:
-
-```sh
-npx po2mo ./locale/a.po --output ./locale/a-converted.mo
-```
-
-We can set the output filename as well:
-
-```sh
-.
-└── locale/
-    ├── a.po
-    ├── a-converted.mo <-- new!
-    ├── b.po
-    └── c.po
-```
-
-What if we want the outputs to be in the `output` directory?
-
-```sh
-npx po2mo ./locale --output ./output
-```
-
-This will ensure the converted `.mo` files stored in the `output` directory:
-
-```sh
-.
-├── locale/
-│   ├── a.po
-│   ├── b.po
-│   └── c.po
-└── output/  <-- new!
-    ├── a.mo <-- new!
-    ├── b.mo <-- new!
-    └── c.mo <-- new!
-```
-
-What about the `--recursive` option for the nested folders?
-
-```sh
-.
-└── locale/
-    ├── nested/
-    │   ├── aa.po
-    │   ├── bb.po
-    │   └── cc.po
-    ├── a.po
-    ├── b.po
-    └── c.po
-```
-
-No worries, we preserve the folder structure of the nested `.po` files!
-
-```sh
-npx po2mo ./locale --output ./output --recursive
-```
-
-```sh
-.
-├── locale/
-│   ├── nested/
-│   │   ├── aa.po
-│   │   ├── bb.po
-│   │   └── cc.po
-│   ├── a.po
-│   ├── b.po
-│   └── c.po
-└── output/       <-- new!
-    ├── nested/   <-- new!
-    │   ├── aa.mo <-- new!
-    │   ├── bb.mo <-- new!
-    │   └── cc.mo <-- new!
-    ├── a.mo      <-- new!
-    ├── b.mo      <-- new!
-    └── c.mo      <-- new!
-```
+See [Providing Output](./docs/providing-output.md) for details.
 
 ## Current Working Directory (`--cwd`)
 
