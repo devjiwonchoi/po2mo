@@ -102,7 +102,8 @@ if ($null -ne $preferredVersion) {
 Write-Host "==> " -NoNewline -ForegroundColor Blue
 Write-Host "Downloading po2mo binaries v$version" -ForegroundColor White
 
-$po2moHome = $HOME + "/.po2mo"
+$po2moHome = $HOME + "/AppData/Local/.po2mo"
+mkdir $po2moHome -ea 0
 $po2moFile = (Join-Path $po2moHome $po2moName)
 $archiveUrl="https://github.com/devjiwonchoi/po2mo/releases/download/v$version/po2mo-$platform"
 if ($platform -eq 'win') {
@@ -116,9 +117,7 @@ if ($platform -ne 'win') {
 }
 
 if ($platform -eq 'win') {
-  $envPath = [System.Environment]::GetEnvironmentVariable("Path", "User")
-  $envPath += ";$po2moHome"
-  [System.Environment]::SetEnvironmentVariable("Path", $envPath, "User")
+  [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::User)
 }
 
 Start-Process -FilePath $po2moFile -ArgumentList "-h" -NoNewWindow -Wait -ErrorAction Continue
