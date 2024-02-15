@@ -99,12 +99,37 @@ if ($null -ne $preferredVersion) {
   $version = $preferredVersion
 }
 
-Write-Host "==> " -NoNewline -ForegroundColor Blue
-Write-Host "Downloading po2mo binaries v$version" -ForegroundColor White
+Write-Host "==> " -NoNewline -ForegroundColor Green
+Write-Host "Installing v$version" -ForegroundColor White
 
-$po2moHome = $HOME + "/AppData/Local/.po2mo"
-mkdir $po2moHome -ea 0
+$po2moHome = $HOME + "/.po2mo"
 $po2moFile = (Join-Path $po2moHome $po2moName)
+
+if (Get-Command -Name "po2mo" -ErrorAction SilentlyContinue) {
+  $currentVersion = (po2mo -v).Trim()
+  $currentLocation = (Get-Command -Name "po2mo").Source
+
+  if ($currentVersion -eq $version -and $currentLocation -eq $po2moFile) {
+    Write-Host "Already up to date v$currentVersion at $currentLocation"
+    exit 0
+  } else {
+    Write-Host "Detected po2mo v$currentVersion at $currentLocation" -ForegroundColor White
+    Write-Host "Would you like to replace it? [Y/n] " -ForegroundColor White -NoNewline
+    $response = Read-Host
+    if ($response -eq "n") {
+      Write-Host "Please uninstall the existing po2mo first" -ForegroundColor White
+      exit 0
+    } else {
+      Remove-Item -Path $currentLocation -Force
+    }
+  }
+}
+
+Write-Host "==> " -NoNewline -ForegroundColor Green
+Write-Host "Downloading po2mo binaries from the Web..." -ForegroundColor White
+
+New-Item -ItemType Directory -Path $po2moHome -ErrorAction SilentlyContinue | Out-Null
+
 $archiveUrl="https://github.com/devjiwonchoi/po2mo/releases/download/v$version/po2mo-$platform"
 if ($platform -eq 'win') {
   $archiveUrl="$archiveUrl.exe"
@@ -122,4 +147,4 @@ if ($platform -eq 'win') {
 
 Start-Process -FilePath $po2moFile -ArgumentList "-h" -NoNewWindow -Wait -ErrorAction Continue
 
-Write-Host "Thank you for downloading po2mo!" -ForegroundColor Blue
+Write-Host "Thank you for downloading po2mo!" -ForegroundColor Green
