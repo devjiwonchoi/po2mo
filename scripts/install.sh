@@ -106,7 +106,15 @@ download_and_install() {
   chmod +x "$po2mo_home/po2mo"
   SHELL="$SHELL" "$po2mo_home/po2mo" -h || return 1
 
-  printf "${tty_blue}Thank you for downloading po2mo!${tty_reset}\n"
+  printf "${tty_blue}To run po2mo on the current terminal, enter: ${tty_reset}"
+
+  if [ "${platform}" = "macos" ]; then
+    echo "export PATH=\"\$PATH:$po2mo_home\"" >>~/.zshrc
+    printf "${tty_bold}source ~/.zshrc${tty_reset}\n"
+  elif [ "${platform}" = "linux" ]; then
+    echo "export PATH=\"\$PATH:$po2mo_home\"" >>~/.bashrc
+    printf "${tty_bold}source ~/.bashrc${tty_reset}\n"
+  fi
 }
 
 download_and_install || abort "Install Error!"

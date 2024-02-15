@@ -108,10 +108,17 @@ $archiveUrl="https://github.com/devjiwonchoi/po2mo/releases/download/v$version/p
 if ($platform -eq 'win') {
   $archiveUrl="$archiveUrl.exe"
 }
+
 Invoke-WebRequest $archiveUrl -OutFile $po2moFile -UseBasicParsing
 
 if ($platform -ne 'win') {
   chmod +x $po2moFile
+}
+
+if ($platform -eq 'win') {
+  $envPath = [System.Environment]::GetEnvironmentVariable("Path", "User")
+  $envPath += ";$po2moHome"
+  [System.Environment]::SetEnvironmentVariable("Path", $envPath, "User")
 }
 
 Start-Process -FilePath $po2moFile -ArgumentList "-h" -NoNewWindow -Wait -ErrorAction Continue
