@@ -9,7 +9,7 @@ dependencies:
     specifier: ^5.0.2
     version: 5.0.2
   gettext-parser:
-    specifier: ^7
+    specifier: ^7.0.1
     version: 7.0.1
   simple-git:
     specifier: ^3.22.0
