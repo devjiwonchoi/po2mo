@@ -1,6 +1,6 @@
 {
   "name": "po2mo",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "description": "po to mo, it's simple.",
   "license": "MIT",
   "bin": "./dist/cli.js",
