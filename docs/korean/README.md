@@ -10,15 +10,13 @@
   </a>
 </p>
 
-**이 프로젝트는 안정적인 버전 2를 위해 빠르게 개발되고 있습니다. 변경되는 사항에 유의하시기 바랍니다.**
-
-> [v2 백로그](https://github.com/devjiwonchoi/po2mo/issues/37)를 확인해주세요.
-
----
+[:us: 영문 문서](../../README.md)
 
 ## 설치방법
 
-자세한 내용은 [설치방법](./docs/installation.md)을 확인하세요.
+Standalone 스크립트를 사용하거나 Node.js 패키지 매니저를 통해 설치할 수 있습니다.
+
+자세한 내용은 [설치방법](./installation.md)을 확인하세요.
 
 ## 디폴트
 

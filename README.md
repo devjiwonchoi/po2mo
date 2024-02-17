@@ -10,15 +10,11 @@
   </a>
 </p>
 
-**This project is rapidly developed for stable version 2. Please be aware of the breaking changes.**
-
-> Please checkout the [v2 backlog](https://github.com/devjiwonchoi/po2mo/issues/37)
-
-:kr: [한국어 문서](./docs/korean/README.md)도 지원합니다!
-
----
+[:kr: Korean Docs](./docs/korean/README.md)
 
 ## Installation
+
+Supports installation via standalone scripts and Node.js package managers.
 
 See [Installation](./docs/installation.md) for details.
 
