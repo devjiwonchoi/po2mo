@@ -18,15 +18,15 @@
 
 ---
 
+## Installation
+
+See [Installation](./docs/installation.md) for details.
+
 ## Default Behavior
 
 By default, `po2mo` **will convert any created, modified, or staged .po files found in the local Git repository**.
 
 You can change the current working directory with the [`--cwd`](#current-working-directory---cwd) option.
-
-```sh
-npx po2mo@latest
-```
 
 ```sh
 Usage: po2mo [options]

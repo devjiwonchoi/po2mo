@@ -13,12 +13,13 @@ else
   tty_escape() { :; }
 fi
 tty_mkbold() { tty_escape "1;$1"; }
-tty_blue="$(tty_mkbold 34)"
+tty_green="$(tty_mkbold 32)"
 tty_bold="$(tty_mkbold 39)"
+tty_underline="$(tty_escape 4)"
 tty_reset="$(tty_escape 0)"
 
 ohai() {
-  printf "${tty_blue}==>${tty_bold} %s${tty_reset}\n" "$1"
+  printf "${tty_green}==>${tty_bold} %s${tty_reset}\n" "$1"
 }
 
 # End from https://github.com/Homebrew/install/blob/master/install.sh
@@ -90,30 +91,53 @@ download_and_install() {
     version="${PO2MO_VERSION}"
   fi
 
+  ohai "Installing v${version}"
+
+  # install to PO2MO_HOME, defaulting to ~/.po2mo
+  po2mo_home="$HOME/.po2mo"
+  po2mo_file="$po2mo_home/po2mo"
+
+  if command -v po2mo >/dev/null 2>&1; then
+    local current_version
+    current_location="$(command -v po2mo)"
+    current_version="$(po2mo -v)"
+    if [ "${current_version}" = "${version}" ] && [ "${po2mo_file}" = "${current_location}" ]; then
+      printf "Already up to date v${version} at ${current_location}\n"
+      return 0
+    else
+      printf "Detected po2mo v${version} at ${current_location}\n"
+      printf "Would you like to replace it? [Y/n] "
+      read -r replace
+      if [ "$replace" = "n" ]; then
+        printf "Please uninstall the existing po2mo first\n"
+        return 0
+      else
+        rm -rf "$current_location"
+      fi
+    fi
+  fi
+
+  mkdir -p "$po2mo_home" || abort "Mkdir Error!"
+  trap 'rm -rf "$po2mo_home"' EXIT INT TERM HUP
+
+  ohai "Downloading po2mo binaries from the Web..."
+  # download the binary to the specified directory
+
   archive_url="https://github.com/devjiwonchoi/po2mo/releases/download/v${version}/po2mo-${platform}"
   if [ "${platform}" = "win" ]; then
     archive_url="${archive_url}.exe"
   fi
 
-  # install to PO2MO_HOME, defaulting to ~/.po2mo
-  po2mo_home="$HOME/.po2mo"
-  mkdir -p "$po2mo_home" || abort "Mkdir Error!"
-  trap 'rm -rf "$po2mo_home"' EXIT INT TERM HUP
+  download "$archive_url" >"$po2mo_file" || return 1
+  chmod +x "$po2mo_file"
+  SHELL="$SHELL" "$po2mo_file" -h || return 1
 
-  ohai "Downloading po2mo binaries v${version}"
-  # download the binary to the specified directory
-  download "$archive_url" >"$po2mo_home/po2mo" || return 1
-  chmod +x "$po2mo_home/po2mo"
-  SHELL="$SHELL" "$po2mo_home/po2mo" -h || return 1
-
-  printf "${tty_blue}To run po2mo on the current terminal, enter: ${tty_reset}"
+  printf "${tty_green}Thank you for downloading po2mo!${tty_reset}\n"
 
   if [ "${platform}" = "macos" ]; then
-    echo "export PATH=\"\$PATH:$po2mo_home\"" >>~/.zshrc
-    printf "${tty_bold}source ~/.zshrc${tty_reset}\n"
+    echo 'export PATH="'$po2mo_home':$PATH"' >>~/.zshrc
   elif [ "${platform}" = "linux" ]; then
-    echo "export PATH=\"\$PATH:$po2mo_home\"" >>~/.bashrc
-    printf "${tty_bold}source ~/.bashrc${tty_reset}\n"
+    echo 'export PATH="'$po2mo_home':$PATH"' >>~/.bashrc
   fi
 }
 
