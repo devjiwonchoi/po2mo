@@ -76,7 +76,7 @@ Each objects inside the `tasks` array are equal to a single conversion task, whi
     {
       "input": "./locale",
       "output": "./output",
-      "recursive": true,
+      "recursive": true
     }
   ]
 }

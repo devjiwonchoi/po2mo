@@ -74,7 +74,7 @@ Options:
     {
       "input": "./locale",
       "output": "./output",
-      "recursive": true,
+      "recursive": true
     }
   ]
 }

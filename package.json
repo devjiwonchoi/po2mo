@@ -2,12 +2,12 @@
   "name": "po2mo",
   "version": "1.7.3",
   "description": "po to mo, it's simple.",
-  "license": "MIT",
   "bin": "./dist/cli.js",
   "scripts": {
     "build": "bunchee",
     "build:pkg": "pnpm build && pkg . --out-path exec --targets node18-linux-x64,node18-macos-x64,node18-win-x64 --overwrite",
     "test": "jest",
+    "format": "prettier --write .",
     "prepublishOnly": "pnpm build"
   },
   "dependencies": {
@@ -24,22 +24,16 @@
     "bunchee": "^4.4.1",
     "jest": "^29.7.0",
     "pkg": "^5.8.1",
+    "prettier": "^3.2.5",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"
   },
-  "files": [
-    "dist"
-  ],
-  "jest": {
-    "transform": {
-      "^.+\\.(t|j)sx?$": "@swc/jest"
-    },
-    "testEnvironment": "node",
-    "testTimeout": 10000,
-    "verbose": true
-  },
+  "license": "MIT",
   "author": "Jiwon Choi",
   "repository": "https://github.com/devjiwonchoi/po2mo.git",
+  "files": [
+    "./dist"
+  ],
   "keywords": [
     "po2mo",
     "po",
@@ -49,5 +43,5 @@
     "l10n",
     "translate"
   ],
-  "packageManager": "pnpm@8.9.0"
+  "packageManager": "pnpm@8.15.0"
 }

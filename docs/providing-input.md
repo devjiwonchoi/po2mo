@@ -1,4 +1,3 @@
-
 # Providing Input
 
 Let's say we have a folder tree like this:
