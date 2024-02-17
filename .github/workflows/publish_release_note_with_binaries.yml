@@ -1,8 +1,8 @@
-name: Publish Binaries on Release
+name: Publish Release Note with Binaries
 
 on:
-  release:
-    types: [published, edited]
+  push:
+    branches: [main]
 
 jobs:
   publish:
@@ -20,9 +20,9 @@ jobs:
       - name: Build Binaries
         run: pnpm build:pkg
 
-      - name: Publish Binaries
+      - name: Publish Release Note with Binaries
         uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: ./exec/*
+          generate_release_notes: true
