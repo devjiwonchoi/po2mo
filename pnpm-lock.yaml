@@ -9,8 +9,8 @@ dependencies:
     specifier: ^5.0.2
     version: 5.0.2
   gettext-parser:
-    specifier: ^7.0.1
-    version: 7.0.1
+    specifier: ^8.0.0
+    version: 8.0.0
   simple-git:
     specifier: ^3.22.0
     version: 3.22.0
@@ -2142,8 +2142,9 @@ packages:
       resolve-pkg-maps: 1.0.0
     dev: true
 
-  /gettext-parser@7.0.1:
-    resolution: {integrity: sha512-LU+ieGH3L9HmKEArTlX816/iiAlyA0fx/n/QSeQpkAaH/+jxMk/5UtDkAzcVvW+KlY25/U+IE6dnfkJ8ynt8pQ==}
+  /gettext-parser@8.0.0:
+    resolution: {integrity: sha512-eFmhDi2xQ+2reMRY2AbJ2oa10uFOl1oyGbAKdCZiNOk94NJHi7aN0OBELSC9v35ZAPQdr+uRBi93/Gu4SlBdrA==}
+    engines: {node: '>=18'}
     dependencies:
       content-type: 1.0.5
       encoding: 0.1.13
