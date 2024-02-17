@@ -30,14 +30,6 @@
   "files": [
     "dist"
   ],
-  "jest": {
-    "transform": {
-      "^.+\\.(t|j)sx?$": "@swc/jest"
-    },
-    "testEnvironment": "node",
-    "testTimeout": 10000,
-    "verbose": true
-  },
   "author": "Jiwon Choi",
   "repository": "https://github.com/devjiwonchoi/po2mo.git",
   "keywords": [
