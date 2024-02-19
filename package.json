@@ -2,13 +2,13 @@
   "name": "po2mo",
   "version": "2.0.1",
   "description": "po to mo, it's simple.",
-  "bin": "./dist/cli.js",
+  "bin": "./dist/cli.min.js",
   "scripts": {
     "build": "bunchee",
     "build:pkg": "pnpm build && pkg . --out-path exec --targets node18-linux-x64,node18-macos-x64,node18-win-x64 --overwrite",
     "test": "jest",
     "format": "prettier --write .",
-    "prepublishOnly": "pnpm build"
+    "prepublishOnly": "pnpm build -m && rm ./dist/cli.min.d.ts"
   },
   "dependencies": {
     "arg": "^5.0.2",
@@ -35,12 +35,15 @@
     "./dist"
   ],
   "keywords": [
-    "po2mo",
+    "cli",
     "po",
     "mo",
     "gettext",
+    "gnu",
     "i18n",
+    "internationalization",
     "l10n",
+    "localization",
     "translate"
   ],
   "packageManager": "pnpm@8.15.0"
