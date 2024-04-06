@@ -33,7 +33,7 @@ devDependencies:
     version: 20.11.24
   bunchee:
     specifier: ^5.0.1
-    version: 5.0.1(typescript@5.3.3)
+    version: 5.0.1(typescript@5.4.3)
   jest:
     specifier: ^29.7.0
     version: 29.7.0(@types/node@20.11.24)
@@ -48,7 +48,7 @@ devDependencies:
     version: 4.7.1
   typescript:
     specifier: ^5.3.3
-    version: 5.3.3
+    version: 5.4.3
 
 packages:
 
@@ -1733,7 +1733,7 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /bunchee@5.0.1(typescript@5.3.3):
+  /bunchee@5.0.1(typescript@5.4.3):
     resolution: {integrity: sha512-awtn36CmPdrAHtT13U9cn/g/pqW8fw1/UVsUJh0XjX1w8UJtLUJYuBe8PqVKoguNu0HUTQn6p0eZaXVjotBIhw==}
     engines: {node: '>= 18.0.0'}
     hasBin: true
@@ -1758,11 +1758,11 @@ packages:
       magic-string: 0.30.8
       pretty-bytes: 5.6.0
       rollup: 4.13.2
-      rollup-plugin-dts: 6.1.0(rollup@4.13.2)(typescript@5.3.3)
+      rollup-plugin-dts: 6.1.0(rollup@4.13.2)(typescript@5.4.3)
       rollup-plugin-swc3: 0.11.0(@swc/core@1.4.11)(rollup@4.13.2)
       rollup-preserve-directives: 1.1.1(rollup@4.13.2)
       tslib: 2.6.2
-      typescript: 5.3.3
+      typescript: 5.4.3
     dev: true
 
   /callsites@3.1.0:
@@ -3428,7 +3428,7 @@ packages:
     engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
     dev: true
 
-  /rollup-plugin-dts@6.1.0(rollup@4.13.2)(typescript@5.3.3):
+  /rollup-plugin-dts@6.1.0(rollup@4.13.2)(typescript@5.4.3):
     resolution: {integrity: sha512-ijSCPICkRMDKDLBK9torss07+8dl9UpY9z1N/zTeA1cIqdzMlpkV3MOOC7zukyvQfDyxa1s3Dl2+DeiP/G6DOw==}
     engines: {node: '>=16'}
     peerDependencies:
@@ -3437,7 +3437,7 @@ packages:
     dependencies:
       magic-string: 0.30.8
       rollup: 4.13.2
-      typescript: 5.3.3
+      typescript: 5.4.3
     optionalDependencies:
       '@babel/code-frame': 7.23.5
     dev: true
@@ -3759,8 +3759,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /typescript@5.3.3:
-    resolution: {integrity: sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==}
+  /typescript@5.4.3:
+    resolution: {integrity: sha512-KrPd3PKaCLr78MalgiwJnA25Nm8HAmdwN3mYUYZgG/wizIo9EainNVQI9/yDavtVFRN2h3k8uf3GLHuhDMgEHg==}
     engines: {node: '>=14.17'}
     hasBin: true
     dev: true
