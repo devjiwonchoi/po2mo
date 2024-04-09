@@ -1,8 +1,8 @@
-import { exec, spawn } from 'child_process'
-import { existsSync } from 'fs'
-import { mkdir, rm, unlink } from 'fs/promises'
-import { tmpdir } from 'os'
-import { resolve, join } from 'path'
+import { exec, spawn } from 'node:child_process'
+import { existsSync } from 'node:fs'
+import { mkdir, rm, unlink } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { resolve, join } from 'node:path'
 
 export async function runTest({
   args,
