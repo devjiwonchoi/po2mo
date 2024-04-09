@@ -46,5 +46,8 @@
     "localization",
     "translate"
   ],
+  "engines": {
+    "node": "^18.17 || >=20"
+  },
   "packageManager": "pnpm@8.15.0"
 }
