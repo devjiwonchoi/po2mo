@@ -22,6 +22,10 @@ jobs:
         run: pnpm install
 
       - name: Publish to NPM
-        run: pnpm publish --no-git-checks
+        run: |
+          npm config set "//registry.npmjs.org/:_authToken" "${NPM_TOKEN}" # pnpm config set is broken
+          pnpm publish --no-git-checks
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          # setting the "npm_config_//registry.npmjs.org/:_authToken" env variable directly doesn't work.
+          # probably "pnpm release" doesn't pass auth tokens to child processes
+          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
