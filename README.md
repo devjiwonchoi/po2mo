@@ -12,6 +12,8 @@
 
 [:kr: Korean Docs](./docs/korean/README.md)
 
+> Using v1? Try stable v2. See [Migration Guide](./docs/migration-guide.md) for details.
+
 ## Installation
 
 Supports installation via standalone scripts and Node.js package managers.
