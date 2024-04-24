@@ -172,11 +172,27 @@ export async function po2mo({ config, ...args }: CliArgs) {
       return Promise.reject(err)
     }
 
-    const { tasks }: Po2MoConfig = JSON.parse(
+    const po2moConfig: Po2MoConfig = JSON.parse(
       await readFile(configPath, 'utf-8')
     )
 
-    const convertPromisesArray = tasks.map((task) => {
+    if (Object.hasOwn(po2moConfig, 'files')) {
+      logger.warn(
+        'The "files" key is deprecated. We converted it to "tasks" for you.'
+      )
+      const updatedConfig = {
+        tasks: (po2moConfig as unknown as { files: any }).files,
+      }
+      await writeFile(
+        configPath,
+        JSON.stringify(updatedConfig, null, 2),
+        'utf-8'
+      )
+
+      po2moConfig.tasks = updatedConfig.tasks
+    }
+
+    const convertPromisesArray = po2moConfig.tasks.map((task) => {
       const resolvedArgs = resolveArgs({
         cwd: args.cwd,
         ...task,
