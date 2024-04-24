@@ -167,7 +167,14 @@ export async function po2mo({ config, ...args }: CliArgs) {
       !config.endsWith('po2mo.json') ? 'po2mo.json' : ''
     )
 
-    const { tasks }: Po2MoConfig = await import(configPath)
+    if (!existsSync(configPath)) {
+      const err = new Error(`Could not find po2mo.json at ${configPath}.`)
+      return Promise.reject(err)
+    }
+
+    const { tasks }: Po2MoConfig = JSON.parse(
+      await readFile(configPath, 'utf-8')
+    )
 
     const convertPromisesArray = tasks.map((task) => {
       const resolvedArgs = resolveArgs({

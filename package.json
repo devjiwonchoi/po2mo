@@ -2,7 +2,7 @@
   "name": "po2mo",
   "version": "2.0.4",
   "description": "po to mo, it's simple.",
-  "bin": "./dist/po2mo.js",
+  "bin": "./dist/index.js",
   "scripts": {
     "build": "bunchee --no-dts",
     "build:pkg": "pnpm build && pkg . --out-path exec --targets node18-linux-x64,node18-macos-x64,node18-win-x64 --overwrite",
