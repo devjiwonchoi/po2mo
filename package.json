@@ -1,6 +1,6 @@
 {
   "name": "po2mo",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "po to mo, it's simple.",
   "bin": "./dist/index.js",
   "scripts": {
